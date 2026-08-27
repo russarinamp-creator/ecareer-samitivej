@@ -449,6 +449,52 @@ let currentUser = null;
 const B5F_MIN = 4.0; // เกณฑ์ขั้นต่ำ B5F คงที่ทุก Level ทุกกลุ่ม — มติผู้บริหาร (Threshold Gate ไม่ใช่สัดส่วน)
 const SPEAKING_MIN = 4; // เกณฑ์ Speaking Test ขั้นต่ำ = Level 4 คงที่ทุก Career Level (คนละสเกลกับ TOEIC)
 
+// ===== เกณฑ์ "ภาคบังคับ" (Mandatory Pass Criteria) — มติผู้บริหาร =====
+// ถ้าหัวข้อใดหัวข้อหนึ่งต่อไปนี้ไม่ถึงเกณฑ์ขั้นต่ำ ระบบจะสรุปผลรวมเป็น "ไม่ผ่าน (Failed)" ทันที
+// แม้ว่าคะแนนรวมเฉลี่ยทั้งหมดจะถึง 80% ก็ตาม (Threshold Gate ระดับ "ผลสรุปรวม" ไม่ใช่แค่ระดับหัวข้อย่อย)
+const MANDATORY_RULES = {
+  c1_annual: { min: 80, label: 'Annual Test', unit: '%' },
+  c1_unit:   { min: 80, label: 'Unit Competency', unit: '%' },
+  c4_train:  { min: 100, label: 'ชั่วโมงอบรม (Training Hours)', unit: '% ของเกณฑ์ 60 ชม./ปี' }
+};
+
+/* ตรวจสอบหัวข้อภาคบังคับทั้งหมดของ 1 การประเมิน
+   คืนค่าเป็น array ของหัวข้อที่ "ไม่ผ่าน" เท่านั้น (ว่าง = ผ่านครบทุกหัวข้อภาคบังคับ)
+   หมายเหตุ: ถ้ายังไม่มีการกรอกคะแนน (null) จะยังไม่ถือว่า "ตกเกณฑ์" เพราะยังประเมินไม่เสร็จ */
+function getMandatoryFailures(a){
+  const fails = [];
+  Object.keys(MANDATORY_RULES).forEach(key=>{
+    const rule = MANDATORY_RULES[key];
+    const val = a[key];
+    if(val!=null && val < rule.min){
+      fails.push({ key, label: rule.label, achieved: val, min: rule.min, unit: rule.unit });
+    }
+  });
+  return fails;
+}
+
+/* สรุปผล "ผ่าน/ไม่ผ่าน" ของการประเมิน 1 รายการ โดยรวม Logic เกณฑ์ภาคบังคับเข้ากับคะแนนรวม
+   Logic: ผ่าน = คะแนนรวม ≥ 80  AND  ไม่มีหัวข้อภาคบังคับใดตกเกณฑ์
+          ไม่ผ่าน = คะแนนรวม < 80  OR  มีหัวข้อภาคบังคับอย่างน้อย 1 หัวข้อตกเกณฑ์ */
+function evalResult(a){
+  const total = calcScore(a);
+  const mandatoryFails = getMandatoryFailures(a);
+  const scorePass = total>=80;
+  const pass = scorePass && mandatoryFails.length===0;
+  // failReason ใช้สรุปสาเหตุแบบสั้นๆ สำหรับแสดงผล/Export
+  let failReason = null;
+  if(!pass){
+    if(mandatoryFails.length>0 && scorePass){
+      failReason = 'ตกเกณฑ์หัวข้อภาคบังคับ';
+    } else if(mandatoryFails.length>0 && !scorePass){
+      failReason = 'คะแนนรวมไม่ถึงเกณฑ์ + ตกเกณฑ์หัวข้อภาคบังคับ';
+    } else if(!scorePass){
+      failReason = 'คะแนนรวมไม่ถึงเกณฑ์ 80';
+    }
+  }
+  return { total, pass, mandatoryFails, failReason };
+}
+
 // Sub-criteria ของ C3 (Team Participation) และ C5 (Leadership) — จำนวนและชื่อ Sub เปลี่ยนไปตาม Level ตามไฟล์เกณฑ์จริง
 // max = เกณฑ์เต็ม/เกณฑ์อ้างอิงของ Sub นั้น · weight = น้ำหนักคะแนนที่ได้ถ้าทำได้เต็ม max
 const SUB_CONFIG = {
@@ -530,27 +576,27 @@ function scoreBreakdown(a){
   const engMin = cfg.english[a.level].toeic;
   const rows = [];
 
-  // ---- C1-1 Annual Test ----
+  // ---- C1-1 Annual Test (ภาคบังคับ — เกณฑ์ผ่าน ≥80%) ----
   {
     const v=a.c1_annual, max=w.c1_annual[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
-    const flagPass = v!=null? v>=80 : null;
-    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ผ่าน = 80%',
-      desc:'สอบความรู้เภสัชกรรมประจำปี · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
+    const flagPass = v!=null? v>=MANDATORY_RULES.c1_annual.min : null;
+    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ผ่าน = 80% (ภาคบังคับ)', mandatory:true,
+      desc:'สอบความรู้เภสัชกรรมประจำปี · คะแนนให้ตามสัดส่วนจริงที่ทำได้ · หัวข้อนี้เป็น "ภาคบังคับ" หากได้ต่ำกว่า 80% ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80% (ภาคบังคับ)':'ตกเกณฑ์ภาคบังคับ ≥80%'),
       gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c1_annual', a.group, a.level)});
   }
-  // ---- C1-2 Unit Competency ----
+  // ---- C1-2 Unit Competency (ภาคบังคับ — เกณฑ์ผ่าน ≥80%) ----
   {
     const v=a.c1_unit, max=w.c1_unit[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
-    const flagPass = v!=null? v>=80 : null;
-    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ผ่าน = 80%',
-      desc:'แบบประเมิน Unit Competency Checklist · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
+    const flagPass = v!=null? v>=MANDATORY_RULES.c1_unit.min : null;
+    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ผ่าน = 80% (ภาคบังคับ)', mandatory:true,
+      desc:'แบบประเมิน Unit Competency Checklist · คะแนนให้ตามสัดส่วนจริงที่ทำได้ · หัวข้อนี้เป็น "ภาคบังคับ" หากได้ต่ำกว่า 80% ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80% (ภาคบังคับ)':'ตกเกณฑ์ภาคบังคับ ≥80%'),
       gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c1_unit', a.group, a.level)});
   }
@@ -611,14 +657,16 @@ function scoreBreakdown(a){
       earned: a.c3_team!=null? Math.round(pct(a.c3_team)*w.c3_team[idx]*10)/10 : null, flagPass:null, flagLabel:null, gap:null, ref:c3ref});
   }
 
-  // ---- C4 Training Hours ----
+  // ---- C4 Training Hours (ภาคบังคับ — เกณฑ์เต็ม 60 ชม./ปี = 100%) ----
   {
     const v=a.c4_train, max=w.c4_train[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
     const isHrs = typeof v==='number' && v>100;
-    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์เต็ม = 60 ชม./ปี',
-      desc:'รวมชั่วโมงอบรม Clinical Training (≥30 ชม.) + Mandatory Training (≥30 ชม.) · ให้คะแนนตามสัดส่วนชั่วโมงจริง',
-      achieved: v!=null? v+(isHrs?' ชม.':'%'):'—', max, earned, flagPass:null, flagLabel:null,
+    const flagPass = (v!=null && !isHrs)? v>=MANDATORY_RULES.c4_train.min : null;
+    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์เต็ม = 60 ชม./ปี (ภาคบังคับ)', mandatory:true,
+      desc:'รวมชั่วโมงอบรม Clinical Training (≥30 ชม.) + Mandatory Training (≥30 ชม.) · ให้คะแนนตามสัดส่วนชั่วโมงจริง · หัวข้อนี้เป็น "ภาคบังคับ" หากอบรมไม่ครบ 60 ชม./ปี ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
+      achieved: v!=null? v+(isHrs?' ชม.':'%'):'—', max, earned, flagPass,
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านเกณฑ์ภาคบังคับ 60 ชม./ปี':'ตกเกณฑ์ภาคบังคับ (ไม่ครบ 60 ชม./ปี)'),
       gap: (v!=null && v<100 && !isHrs)? `เข้าอบรมเพิ่มอีกให้ครบ 60 ชม./ปี จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c4_train', a.group, a.level)});
   }
@@ -799,14 +847,15 @@ function renderBreakdownCards(a){
         return `<div class="item-row">
           <div class="item-flex">
             <div class="item-left">
-              <div class="item-name">${r.name}</div>
-              ${r.standard? `<div class="item-standard">🎯 ${r.standard}</div>`:''}
+              <div class="item-name">${r.name}${r.mandatory?' <span style="font-size:10px;font-weight:800;color:#fff;background:var(--red);padding:2px 8px;border-radius:7px;vertical-align:middle">ภาคบังคับ</span>':''}</div>
+              ${r.standard? `<div class="item-standard" style="${r.mandatory?'background:var(--red)':''}">🎯 ${r.standard}</div>`:''}
               <div class="item-desc">${r.desc}</div>
               <div class="item-mid">
                 ${done?`<span class="item-achieved">ผลที่ได้: ${r.achieved}</span>`:''}
                 ${r.flagLabel? `<span class="${r.flagPass?'flag-pass':'flag-fail'}">${r.flagPass?'✓ ':'✗ '}${r.flagLabel}</span>`:''}
               </div>
               ${r.gap? `<div class="item-gap">💡 <b>ต้องปรับปรุง:</b> ${r.gap}</div>` : (done && full? `<div class="item-gap" style="background:var(--green-l);color:var(--green-d)">✓ ได้คะแนนเต็มในหัวข้อนี้แล้ว</div>`:'')}
+              ${r.mandatory && r.flagPass===false? `<div class="item-gap" style="background:var(--red-l);color:var(--red);font-weight:700">🚫 หัวข้อภาคบังคับนี้ไม่ผ่านเกณฑ์ — จะทำให้ผลสรุปรวมเป็น "ไม่ผ่าน (Failed)" ทันที ไม่ว่าคะแนนรวมจะถึง 80 หรือไม่</div>`:''}
             </div>
             <div class="item-right ${panelClass}">
               <div class="item-score-big" style="color:${numColor}">${done? r.earned : '—'}</div>
@@ -821,11 +870,26 @@ function renderBreakdownCards(a){
   }).join('');
 }
 
+/* กล่องแจ้งเตือนสีแดง — แสดงเมื่อผลสรุปรวมเป็น "ไม่ผ่าน" เพราะตกเกณฑ์หัวข้อภาคบังคับ
+   ใช้ร่วมกันในหน้า ผลของฉัน / ประวัติ / รออนุมัติ เพื่อให้พนักงานและหัวหน้างานเห็นสาเหตุชัดเจน */
+function mandatoryWarningBox(mandatoryFails){
+  if(!mandatoryFails || !mandatoryFails.length) return '';
+  return `<div style="background:var(--red-l);border:1.5px solid var(--red);border-radius:12px;padding:14px 18px;margin-top:12px">
+    <div style="display:flex;align-items:center;gap:8px;color:var(--red);font-weight:800;font-size:14px;margin-bottom:8px">
+      🚫 ตกเกณฑ์หัวข้อภาคบังคับ (Mandatory Criteria Failed)
+    </div>
+    <div style="font-size:12px;color:var(--text);margin-bottom:8px">แม้คะแนนรวมเฉลี่ยอาจถึงเกณฑ์ 80% แต่ระบบสรุปผลโดยรวมเป็น <b>"ไม่ผ่าน (Failed)"</b> ทันที เนื่องจากหัวข้อภาคบังคับต่อไปนี้ไม่ถึงเกณฑ์ขั้นต่ำที่กำหนด:</div>
+    <ul style="margin:0 0 0 18px;font-size:12.5px;color:var(--text);line-height:1.9">
+      ${mandatoryFails.map(f=>`<li><b>${f.label}</b>: ทำได้ <b style="color:var(--red)">${f.achieved}${f.key==='c1_annual'||f.key==='c1_unit'?'%':'%'}</b> (เกณฑ์ขั้นต่ำ ${f.min}${f.unit})</li>`).join('')}
+    </ul>
+  </div>`;
+}
+
 function renderResult(c){
   const a = ASSESSMENTS.find(x=>x.emp_id===currentUser.emp_id);
   if(!a){ c.innerHTML = `<div class="card"><div class="empty">ยังไม่มีผลการประเมินสำหรับรอบนี้</div></div>`; return; }
-  a.total = calcScore(a);
-  const pass = a.total>=80;
+  const {total, pass, mandatoryFails} = evalResult(a);
+  a.total = total;
   const cfg = CONFIG[a.group];
 
   c.innerHTML = `
@@ -838,7 +902,8 @@ function renderResult(c){
       <span class="badge ${pass?'badge-pass':'badge-fail'}" style="font-size:13px;padding:6px 16px">${pass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}</span>
     </div>
     <div class="progress-wrap"><div class="progress-fill ${pass?'':'fail'}" style="width:${Math.min(a.total,100)}%"></div></div>
-    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน</div>
+    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน และต้องผ่านหัวข้อภาคบังคับทุกข้อ (Annual Test ≥80%, Unit Competency ≥80%, ชั่วโมงอบรม ≥60 ชม./ปี)</div>
+    ${mandatoryWarningBox(mandatoryFails)}
   </div>
 
   ${renderBreakdownCards(a)}
@@ -866,10 +931,12 @@ function renderHistory(c){
   });
   if(!list.length){ c.innerHTML = `<div class="card"><div class="empty">ยังไม่มีประวัติ</div></div>`; return; }
   c.innerHTML = list.map(a=>{
-    a.total = calcScore(a);
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
-    const pass = a.status!=='draft' && a.total>=80;
+    const result = a.status!=='draft'? evalResult(a) : null;
+    a.total = calcScore(a);
+    const pass = result? result.pass : false;
     const scoreColor = a.status==='draft' ? 'var(--text-2)' : (pass? 'var(--green-d)':'var(--red)');
+    const mandatoryTag = (result && result.mandatoryFails.length)? `<span style="font-size:10px;font-weight:800;color:#fff;background:var(--red);padding:2px 8px;border-radius:7px">🚫 ตกเกณฑ์ภาคบังคับ</span>` : '';
     return `<div style="margin-bottom:14px">
       <div class="card" style="margin-bottom:0;cursor:pointer" onclick="toggleHistDetail('${a.session_id}')">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -878,13 +945,15 @@ function renderHistory(c){
             <div style="font-size:11.5px;color:var(--text-2);margin-top:2px">${CONFIG[a.group].labels[a.level]} · อัปเดตล่าสุด ${a.updated}</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
-            <span class="badge badge-${a.status}">${statusLabel(a.status)}</span>
+            ${mandatoryTag}
+            <span class="badge badge-${a.status==='approved'||a.status==='submitted'||a.status==='draft'?a.status:'fail'}">${a.status==='draft'||a.status==='submitted'?statusLabel(a.status):(pass?'อนุมัติแล้ว (ผ่าน)':'อนุมัติแล้ว (ไม่ผ่าน)')}</span>
             <div style="font-weight:800;font-size:16px;color:${scoreColor};min-width:38px;text-align:right">${a.status==='draft'?'—':a.total}</div>
             <span id="hist-arrow-${a.session_id}" style="color:var(--text-2);font-size:12px">▾ ดูรายละเอียด</span>
           </div>
         </div>
       </div>
       <div id="hist-detail-${a.session_id}" style="display:none;margin-top:8px">
+        ${result? mandatoryWarningBox(result.mandatoryFails) : ''}
         ${renderBreakdownCards(a)}
       </div>
     </div>`;
@@ -964,7 +1033,7 @@ function loadAssessForm(){
     <div style="font-size:12.5px;color:var(--text-2);margin:14px 0">${cfg.labels[a.level]} · Session ${a.session_id}</div>
 
     <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)${locked}</div><div class="rate-locked">${a.c1_annual ?? '—'}</div></div>
-    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ผ่าน ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="in-unit" value="${a.c1_unit ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ผ่าน ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="in-unit" value="${a.c1_unit ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C1-3 English Test${locked}</div><div class="rate-locked">${a.c1_eng_val ? (a.c1_eng_type.toUpperCase()+' '+a.c1_eng_val) : '—'}</div></div>
     <div class="rate-row"><div class="rate-name">C2-1 Function Role (%)</div><input class="rate-input" type="number" min="0" max="100" id="in-func" value="${a.c2_func ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C2-2 360°B5F (จากผลสำรวจภายในองค์กร)<small>เกณฑ์ผ่าน ≥${B5F_MIN} ทุก Level (มติผู้บริหาร)</small></div><input class="rate-input" type="number" step="0.1" min="0" max="5" id="in-b5f" value="${a.c2_b5f ?? ''}"></div>
@@ -993,7 +1062,7 @@ function loadAssessForm(){
     </div>
 
     <div style="font-size:12.5px;font-weight:700;color:var(--green-d);margin:20px 0 8px">📊 ตัวอย่างผลคะแนนที่พนักงานจะเห็น (จากค่าที่บันทึกล่าสุด)</div>
-    <div id="assess-breakdown">${renderBreakdownCards(a)}</div>`;
+    <div id="assess-breakdown">${mandatoryWarningBox(getMandatoryFailures(a))}${renderBreakdownCards(a)}</div>`;
 
   // อัปเดต % ที่หัวมุมแบบ Real-time เมื่อพิมพ์
   [...c3subs].forEach(s=>document.getElementById('c3-'+s.id).addEventListener('input',()=>{
@@ -1046,8 +1115,8 @@ function deptStats(){
       if(a.status==='submitted'){ submitted++; return; }
       if(a.status==='approved'){
         approved++;
-        const score = calcScore(a);
-        if(score>=80) pass++; else fail++;
+        const {pass:isPass} = evalResult(a);
+        if(isPass) pass++; else fail++;
       }
     });
     return {dept, totalPeople:people.length, approved, submitted, draft, notStarted, pass, fail};
@@ -1067,7 +1136,7 @@ function conicGradient(segs){
 
 function renderDashboard(c){
   const pending = ASSESSMENTS.filter(a=>a.status==='submitted').length;
-  const passCountAll = ASSESSMENTS.filter(a=>{ a.total=calcScore(a); return a.total>=80 && a.status==='approved'; }).length;
+  const passCountAll = ASSESSMENTS.filter(a=>a.status==='approved' && evalResult(a).pass).length;
   const stats = deptStats();
   const totalStaff = EMPLOYEES.filter(e=>e.role==='viewer').length;
   const totalDone = stats.reduce((s,d)=>s+d.approved+d.submitted+d.draft,0);
@@ -1082,7 +1151,7 @@ function renderDashboard(c){
   <div class="grid-3" style="margin-bottom:16px">
     <div class="kpi"><div class="kpi-val">${totalDone}/${totalStaff}</div><div class="kpi-lbl">เข้าทำประเมินแล้ว</div></div>
     <div class="kpi"><div class="kpi-val">${pending}</div><div class="kpi-lbl">รอ HR อนุมัติ</div></div>
-    <div class="kpi"><div class="kpi-val">${passCountAll}</div><div class="kpi-lbl">ผ่านเกณฑ์ (≥80)</div></div>
+    <div class="kpi"><div class="kpi-val">${passCountAll}</div><div class="kpi-lbl">ผ่านเกณฑ์ (≥80 + ผ่านภาคบังคับ)</div></div>
   </div>
 
   <div class="card">
@@ -1125,7 +1194,7 @@ function renderDashboard(c){
 
   <div class="card">
     <div class="card-title">🎯 สัดส่วนผลประเมิน (IDP) — แยกตามแผนก</div>
-    <div style="font-size:11.5px;color:var(--text-2);margin-bottom:14px">นับเฉพาะรายที่อนุมัติผลแล้ว · สีแดง = ต้องทำแผนพัฒนารายบุคคล (IDP)</div>
+    <div style="font-size:11.5px;color:var(--text-2);margin-bottom:14px">นับเฉพาะรายที่อนุมัติผลแล้ว · ผ่าน = คะแนนรวม ≥80 และผ่านหัวข้อภาคบังคับครบ · สีแดง = ต้องทำแผนพัฒนารายบุคคล (IDP)</div>
     <div class="donut-hero">
       <div class="donut" style="background:${conicGradient([
         {color:'#1B5E3B', pct: overallAssessed? overallPassed/overallAssessed*100:0},
@@ -1178,10 +1247,13 @@ function renderDashboard(c){
     <table><tr><th>พนักงาน</th><th>แผนก</th><th>Level</th><th>คะแนน</th><th>สถานะ</th><th></th></tr>
     ${ASSESSMENTS.map(a=>{
       const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
+      const result = a.status!=='draft'? evalResult(a) : null;
+      const statusText = a.status==='approved'? (result.pass? 'อนุมัติแล้ว (ผ่าน)':'อนุมัติแล้ว (ไม่ผ่าน)') : statusLabel(a.status);
+      const badgeClass = a.status==='approved'? (result.pass?'approved':'fail') : a.status;
       return `<tr><td>${emp?emp.name:a.emp_id}</td><td>${emp?emp.dept:'—'}</td><td>L${a.level}</td>
-      <td>${a.status==='draft'?'—':a.total}</td><td><span class="badge badge-${a.status}">${statusLabel(a.status)}</span></td>
+      <td>${a.status==='draft'?'—':calcScore(a)}</td><td><span class="badge badge-${badgeClass}">${statusText}</span></td>
       <td><span style="color:var(--green-d);font-size:11.5px;cursor:pointer;font-weight:600" onclick="toggleHistDetail('${a.session_id}')" id="hist-arrow-${a.session_id}">▾ ดูรายละเอียด</span></td></tr>
-      <tr id="hist-detail-tr-${a.session_id}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${renderBreakdownCards(a)}</div></td></tr>`;
+      <tr id="hist-detail-tr-${a.session_id}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${result? mandatoryWarningBox(result.mandatoryFails):''}${renderBreakdownCards(a)}</div></td></tr>`;
     }).join('')}
     </table>
   </div>
@@ -1191,13 +1263,16 @@ function renderDashboard(c){
 
 /* ================= EXPORT: CSV (Excel) ================= */
 function exportCSV(){
-  const headers = ['รหัสพนักงาน','ชื่อ','แผนก','กลุ่ม','Level','Annual Test %','Unit Competency %','English Type','English Score','Function Role %','360°B5F','Team %','Training','Leadership %','คะแนนรวม','สถานะ','อัปเดตล่าสุด'];
+  const headers = ['รหัสพนักงาน','ชื่อ','แผนก','กลุ่ม','Level','Annual Test %','Unit Competency %','English Type','English Score','Function Role %','360°B5F','Team %','Training','Leadership %','คะแนนรวม','ผลสรุป','หมายเหตุภาคบังคับ','สถานะ','อัปเดตล่าสุด'];
   const rows = ASSESSMENTS.map(a=>{
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
+    const result = a.status!=='draft'? evalResult(a) : null;
+    const resultText = a.status==='draft' ? '' : (result.pass? 'ผ่าน':'ไม่ผ่าน');
+    const mandatoryNote = result && result.mandatoryFails.length ? result.mandatoryFails.map(f=>`${f.label} (${f.achieved}${f.unit})`).join('; ') : '';
     return [
       a.emp_id, emp?emp.name:'', emp?emp.dept:'', a.group==='med_support'?'Med Support':'ผู้ช่วย', a.level,
       a.c1_annual??'', a.c1_unit??'', a.c1_eng_type??'', a.c1_eng_val??'', a.c2_func??'', a.c2_b5f??'',
-      a.c3_team??'', a.c4_train??'', a.c5_lead??'', a.status==='draft'?'':calcScore(a), statusLabel(a.status), a.updated
+      a.c3_team??'', a.c4_train??'', a.c5_lead??'', a.status==='draft'?'':calcScore(a), resultText, mandatoryNote, statusLabel(a.status), a.updated
     ];
   });
   const csv = '\uFEFF'+[headers, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
@@ -1217,14 +1292,15 @@ function exportPDF(){
   const rows = ASSESSMENTS.map(a=>{
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
     const total = a.status==='draft'?'—':calcScore(a);
-    const pass = a.status!=='draft' && calcScore(a)>=80;
+    const result = a.status!=='draft'? evalResult(a) : null;
+    const resultLabel = a.status==='draft'?'—':(result.pass?'ผ่าน':(result.mandatoryFails.length?'ไม่ผ่าน (ตกเกณฑ์บังคับ)':'ไม่ผ่าน'));
     return `<tr>
       <td>${a.emp_id}</td><td>${emp?emp.name:''}</td><td>${emp?emp.dept:''}</td><td>L${a.level}</td>
       <td>${a.c1_annual??'—'}</td><td>${a.c1_unit??'—'}</td>
       <td>${a.c1_eng_val? (a.c1_eng_type||'toeic').toUpperCase()+' '+a.c1_eng_val : '—'}</td>
       <td>${a.c2_func??'—'}</td><td>${a.c2_b5f??'—'}</td>
       <td>${a.c3_team!=null?a.c3_team+'%':'—'}</td><td>${a.c4_train??'—'}</td><td>${a.c5_lead!=null?a.c5_lead+'%':'—'}</td>
-      <td><b>${total}</b></td><td>${a.status==='draft'?'—':(pass?'ผ่าน':'ไม่ผ่าน')}</td>
+      <td><b>${total}</b></td><td>${resultLabel}</td>
     </tr>`;
   }).join('');
   box.innerHTML = `
@@ -1239,7 +1315,7 @@ function exportPDF(){
       <tr><th>รหัส</th><th>ชื่อ</th><th>แผนก</th><th>Lv</th><th>Annual</th><th>Unit</th><th>English</th><th>Function</th><th>360°B5F</th><th>Team</th><th>Training</th><th>Leadership</th><th>รวม</th><th>ผล</th></tr>
       ${rows}
     </table>
-    <div class="print-footer">เอกสารนี้สร้างจากระบบ E-Career Path — ใช้สำหรับส่งผลให้ผู้บริหารพิจารณาผลตอบแทน</div>`;
+    <div class="print-footer">เอกสารนี้สร้างจากระบบ E-Career Path — ใช้สำหรับส่งผลให้ผู้บริหารพิจารณาผลตอบแทน · หัวข้อภาคบังคับ: Annual Test ≥80%, Unit Competency ≥80%, ชั่วโมงอบรม ≥60 ชม./ปี</div>`;
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Export รายงาน PDF', ip:'127.0.0.1'});
   setTimeout(()=>window.print(), 150);
 }
@@ -1272,8 +1348,8 @@ function fullEditFormHtml(a, prefix){
   const c5subs = SUB_CONFIG[a.group].c5[a.level];
   const isHrs = a.c4_train!=null && a.c4_train>100;
   return `
-    <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)<small>เกณฑ์ ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-annual" value="${a.c1_annual ?? ''}"></div>
-    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-unit" value="${a.c1_unit ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)<small>เกณฑ์ ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-annual" value="${a.c1_annual ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-unit" value="${a.c1_unit ?? ''}"></div>
     <div class="rate-row" style="align-items:flex-start">
       <div class="rate-name">C1-3 English Test<small id="${prefix}-eng-hint">${a.c1_eng_type==='speaking'?`เกณฑ์ผ่าน = Speaking Level ${SPEAKING_MIN} · กรอกระดับ Speaking (1-5)`:`เกณฑ์ผ่าน = TOEIC ${engMin} · กรอกคะแนน TOEIC`}</small></div>
       <div>
@@ -1287,7 +1363,7 @@ function fullEditFormHtml(a, prefix){
     </div>
     <div class="rate-row"><div class="rate-name">C2-1 Function Role (%)</div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-func" value="${a.c2_func ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C2-2 360°B5F (ผลสำรวจภายในองค์กร)<small>เกณฑ์ ≥${B5F_MIN} ทุก Level</small></div><input class="rate-input" type="number" step="0.1" min="0" max="5" id="${prefix}-b5f" value="${a.c2_b5f ?? ''}"></div>
-    <div class="rate-row"><div class="rate-name">C4 Training Hours (%)<small>เกณฑ์เต็ม 60 ชม./ปี</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-train" value="${isHrs? '' : (a.c4_train ?? '')}"></div>
+    <div class="rate-row"><div class="rate-name">C4 Training Hours (%)<small>เกณฑ์เต็ม 60 ชม./ปี (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-train" value="${isHrs? '' : (a.c4_train ?? '')}"></div>
 
     <div class="crit-group">
       <div class="crit-head"><span class="crit-head-name">C3 — Team Participation</span></div>
@@ -1303,7 +1379,8 @@ function renderApprove(c){
   const list = ASSESSMENTS.filter(a=>a.status==='submitted');
   if(!list.length){ c.innerHTML = `<div class="card"><div class="empty">ไม่มีรายการรออนุมัติในขณะนี้ 🎉</div></div>`; return; }
   c.innerHTML = list.map(a=>{
-    a.total = calcScore(a);
+    const {total, pass, mandatoryFails} = evalResult(a);
+    a.total = total;
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
     const cfg = CONFIG[a.group];
     return `<div class="card">
@@ -1313,10 +1390,11 @@ function renderApprove(c){
           <div style="font-size:12px;color:var(--text-2)">${cfg.labels[a.level]}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:22px;font-weight:800;color:${a.total>=80?'var(--green)':'var(--red)'}">${a.total}</div>
-          <div style="font-size:10.5px;color:var(--text-2)">คะแนนรวม</div>
+          <div style="font-size:22px;font-weight:800;color:${pass?'var(--green)':'var(--red)'}">${a.total}</div>
+          <div style="font-size:10.5px;color:var(--text-2)">คะแนนรวม · ${pass?'ผ่านเกณฑ์':'ไม่ผ่านเกณฑ์'}</div>
         </div>
       </div>
+      ${mandatoryWarningBox(mandatoryFails)}
       <div style="font-size:12px;font-weight:700;color:var(--green-d);margin:16px 0 4px">📋 รายละเอียดคะแนนทุกหัวข้อ (ค่าปัจจุบัน)</div>
       ${renderBreakdownCards(a)}
 
@@ -1353,9 +1431,10 @@ function approveSession(sid){
 
   a.status = 'approved';
   a.updated = nowStr();
-  a.total = calcScore(a);
-  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Approve ผลประเมิน (แก้ไข+อนุมัติ) '+sid, ip:'127.0.0.1'});
-  toast('อนุมัติผลเรียบร้อย ✓ ส่งผลให้ผู้บริหารแล้ว');
+  const result = evalResult(a);
+  a.total = result.total;
+  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Approve ผลประเมิน (แก้ไข+อนุมัติ) '+sid+(result.pass?' — ผลสรุป: ผ่าน':' — ผลสรุป: ไม่ผ่าน'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':'')), ip:'127.0.0.1'});
+  toast(result.pass? 'อนุมัติผลเรียบร้อย ✓ ผ่านเกณฑ์ — ส่งผลให้ผู้บริหารแล้ว' : 'อนุมัติผลเรียบร้อย — ผลสรุป: ไม่ผ่านเกณฑ์'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':''));
   renderApprove(document.getElementById('content'));
 }
 function rejectSession(sid){
@@ -1406,8 +1485,10 @@ function toggleEmpEdit(empId){
     }
     const isManager = emp.role==='evaluator';
     const box = document.getElementById('emp-detail-'+empId);
+    const mFails = a.status!=='draft'? getMandatoryFailures(a) : [];
     box.innerHTML = `
       ${isManager? `<div class="tip-box" style="margin-bottom:12px"><b>⚠️ หัวหน้างาน — HR เป็นผู้กรอก/แก้ไขคะแนนแทนทั้งหมด</b><br>เพื่อป้องกันหัวหน้าให้คะแนนตัวเอง ระบบไม่ให้ Manager เลือกตัวเองในหน้า "ประเมินพนักงาน" — HR จึงทำหน้าที่กรอกคะแนนครบทุกหัวข้อ (C1–C5) ให้หัวหน้างานโดยตรงแทน</div>` : ''}
+      ${mandatoryWarningBox(mFails)}
       <div style="font-size:12px;font-weight:700;color:var(--green-d);margin-bottom:8px">📋 รายละเอียดปัจจุบัน</div>
       ${renderBreakdownCards(a)}
       <div style="font-size:12px;font-weight:700;color:var(--gold-d);margin:14px 0 6px">✏️ แก้ไข/กรอกคะแนน (ทุกช่อง)</div>
@@ -1453,9 +1534,10 @@ function approveEmpDirect(empId){
   readFullEditFields(a, 'emp-'+empId);
   a.status = 'approved';
   a.updated = nowStr();
-  a.total = calcScore(a);
-  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'HR กรอก+อนุมัติคะแนนโดยตรง (ป้องกันให้คะแนนตัวเอง) '+empId, ip:'127.0.0.1'});
-  toast('บันทึกและอนุมัติเรียบร้อย ✓');
+  const result = evalResult(a);
+  a.total = result.total;
+  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'HR กรอก+อนุมัติคะแนนโดยตรง (ป้องกันให้คะแนนตัวเอง) '+empId+(result.pass?' — ผลสรุป: ผ่าน':' — ผลสรุป: ไม่ผ่าน'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':'')), ip:'127.0.0.1'});
+  toast(result.pass? 'บันทึกและอนุมัติเรียบร้อย ✓ ผ่านเกณฑ์' : 'บันทึกและอนุมัติเรียบร้อย — ผลสรุป: ไม่ผ่านเกณฑ์'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':''));
   toggleEmpEdit(empId); toggleEmpEdit(empId); // refresh
 }
 
