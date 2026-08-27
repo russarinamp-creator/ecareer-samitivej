@@ -238,16 +238,15 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
     <div class="login-sub">ระบบประเมินสมรรถนะเภสัชกร · Samitivej</div>
     <div class="field">
       <label>รหัสพนักงาน</label>
-      <select id="login-emp">
-        <option value="">— เลือกเพื่อทดสอบ Demo —</option>
-      </select>
+      <input type="text" id="login-emp-input" placeholder="กรอกรหัสพนักงานของคุณ" autocomplete="off">
     </div>
     <div class="field">
       <label>รหัสผ่าน</label>
       <input type="password" id="login-pw" placeholder="กรอกอะไรก็ได้ (โหมด Demo)">
     </div>
     <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
-    <div class="demo-note"><b>โหมด Demo:</b> ข้อมูลทั้งหมดเป็น Mock Data เก็บในเครื่องชั่วคราว เลือกรหัสพนักงานด้านบนเพื่อดูมุมมองของแต่ละ Role (พนักงาน / หัวหน้างาน / HR) รหัสผ่านใส่อะไรก็ได้</div>
+    <div id="login-error" style="display:none;color:var(--red);font-size:12px;margin-top:8px;text-align:center"></div>
+    <div class="demo-note"><b>โหมด Demo — รหัสทดสอบ:</b> HR001 (ฝ่าย HR) · MGR001 วรินรัตน์ (หัวหน้า OPD) · MGR002 อภิรักษ์ (หัวหน้า IPD) · หรือรหัสพนักงาน 6 หลักจากไฟล์จริง — รหัสผ่านใส่อะไรก็ได้</div>
   </div>
 </div>
 
@@ -315,17 +314,104 @@ const CONFIG = {
 const DEPARTMENTS = ['เภสัชกรรม OPD','เภสัชกรรม IPD','เภสัชกรรมฉุกเฉิน (ER)','ผู้ช่วยเภสัชกรรม','Thai Insurance (UR Officer)'];
 
 const EMPLOYEES = [
-  // เภสัชกรรม OPD
-  {emp_id:'EMP001', name:'สมชาย ใจดี',      dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'EMP003', name:'ณัฐพล วงศ์ดี',    dept:'เภสัชกรรม OPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'EMP005', name:'ปิยะดา ศรีสุข',   dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'EMP006', name:'ธนกร มีสุข',      dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'viewer'},
-  {emp_id:'EMP007', name:'อรอุมา แก้วใส',   dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  // เภสัชกรรม IPD
-  {emp_id:'EMP002', name:'นภา รักษ์สุข',    dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'EMP008', name:'กิตติศักดิ์ บุญมี',dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'EMP009', name:'สุนิสา ทองแท้',   dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'EMP010', name:'ประวิทย์ หาญกล้า',dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  // เภสัชกรรม OPD+IPD — พนักงานจริงจากไฟล์ Test_Med.xlsx (97 คน ใต้ วรินรัตน์ ฤทธิ์รอด และ อภิรักษ์ ปัญญาดี)
+  {emp_id:'610194', name:'นันทิกานต์ ฤทธิ์บำรุง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'598237', name:'จิราวรรณ คันโซ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'598569', name:'นอรฮูดา อับดุลเล๊าะ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110124', name:'บูรพา คำศิลา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110129', name:'พรรณาภรณ์ วงค์แสนสี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110133', name:'นฤมล มหาโยธี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110135', name:'สุนิสา เย็นวอน', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110136', name:'ศิริมาส นุชนารถ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110138', name:'บุษนภัส รอดปืนใหญ่', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'110140', name:'สุนันทา ไขไพรวัน', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'110113', name:'สุจินต์ บาริศรี', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'611907', name:'ณัฐพร รุ่งภูวภัทร', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'110110', name:'กมลทิพย์ หาทรัพย์', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'614181', name:'อะยูมิ อินูอิ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'607111', name:'ปฐวรรธณ์ บุญกองรัตน์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'623765', name:'กฤษกร ศิริรังสรรค์กุล', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'611053', name:'อภิสิทธิ์ กัณทวงษ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'611058', name:'ชุตินันท์ เลิศประสิทธิพันธ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'615942', name:'อรปรียา วิชิตวาสุเทพ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'609290', name:'อริสรา นามบิดา', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'611813', name:'ชนิสรา นาคา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'600611', name:'สริตา ธนศรีวนิชชัย', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'596788', name:'สิรินรัชช์ สิงห์โต', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'560460', name:'คณิศร นันทพัฒน์พิทยา', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'570591', name:'กานต์ธิดา จันทรปัตย์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'585840', name:'ประภาพรรณ สมใส', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'610240', name:'ธนวัฒน์ ปิยะพรมดี', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'609145', name:'ชลาทิพย์ มั่นใจ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'610241', name:'ซาฮีราฟ นิแม', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'609206', name:'นงกนก วงศ์เหรียญทอง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'609223', name:'ธนัญญา ลิ่มชูเชื้อ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'609228', name:'นภัสวรรณ ภู่วงษ์งาม', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'534694', name:'ณัฐพงษ์ เลิศทวีสินสกุล', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'578621', name:'ชุติพงศ์ อึงคนึงเกียรติ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'578622', name:'วุฒิชัย ประยงค์สุข', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'559376', name:'อรณิชา เครื่องทิพย์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'545298', name:'พิพัฒน์พงษ์ ขจรจันทร์', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'559391', name:'นิศารัตน์ โฮโซดะ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'559393', name:'กฤษฎิ์ณิชา อภิรมย์รักษ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'559397', name:'ธัญพิชชา พัวประดิษฐ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'546104', name:'จักรกฤษณ์ วงษ์ทอง', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'541944', name:'ศุฌิมา พรบรรเจิด', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'541979', name:'กาญจนาภา อาริยวิทยา', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'504674', name:'เพลินจิต มุ่งพร', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'505756', name:'ชลธิชา พุทธา', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'579788', name:'ณัชชา เดียวอิศเรศ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'507336', name:'ปรม ศรีเจริญสุข', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'543385', name:'ศิริประภา ทาเครือ', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'593062', name:'ธิรารัตน์ นาถมทอง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'506505', name:'ธารินี ทับจันทร์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'113695', name:'มาลินี นาคนาวา', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'510957', name:'ปิยะกาญจน์ สรรพนา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'112274', name:'ศิริพร พรหมวงศ์', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'112694', name:'สุมาลี ดันบาร์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'113250', name:'ณัชนิตา ถูระวรณ์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'580977', name:'ดวงกมล อุทัยวัฒนา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'534512', name:'จิรัฐติ สุขปรีดี', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'534544', name:'เปรมวดี หาญวารี', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'112583', name:'ฉัตติญา ศรีสงวนสัตย์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'113332', name:'ระเบียบ มอซอ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'542651', name:'ปวรา อินมะเหงี่ยม', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'580984', name:'จารุภา ปรีชาพันธ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'534102', name:'สิริรัฐ สิริชูสินวงศ์', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'527417', name:'วิชญาดา ศรีกุล', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'576528', name:'ณัฐพล ท้วมนาค', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'592929', name:'ทิพรัตน์ พึ่งน้ำ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'567506', name:'กฤตณัฑ ลาภสมบุญกมล', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'593949', name:'พรรณิภา ปินะเต', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'549714', name:'อาภาศิริ วิลัย', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'526259', name:'สุพิชญา กันภัย', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'550578', name:'ธิติ โตวัฒนะ', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'548217', name:'อัษฎาพร แคนธานี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'591207', name:'วิยดา เทียมลม', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'556234', name:'อาทิตญา สอนดา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'592911', name:'ฉัตรสุดา ธรรมะ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'592919', name:'ปานทิพย์ นามโพธิ์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'555619', name:'นิสาชล ยอดไม้', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'551370', name:'ภัทราพร เพลียพลป้อง', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'110104', name:'วิภาดา แก้วปลั่ง', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'523182', name:'ภารดี ใจภักดี', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'504375', name:'วนัสนันท์ ศรีสุข', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'559406', name:'ลลิตา ปันมา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'114233', name:'วิสสพร ควรฤาชัย', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'513298', name:'พรธัญรักษ์ สุขสอาด', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'513823', name:'กนกพร เสนางคนิกร', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'515849', name:'วณิชยา แซ่ลิ้ม', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'518289', name:'จิราภรณ์ คำลอย', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'511095', name:'อรณิช พูลภิบาล', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'517954', name:'อุราพร พวงวอน', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'113764', name:'ระพีพรรณ แสงวัฒนะ', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'113986', name:'นิคม อุตมงค์', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'576612', name:'นาดีญา อาแซ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'512470', name:'ณัฐศิรินทร์ ยวงสุวรรณ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'512806', name:'ชนิศา ยงยศรุ่งเรือง', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'113717', name:'เกศรา ชูคำสัตย์', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'530150', name:'จุฑารัตน์ จิตตกลาง', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'580697', name:'สุพรรษา ศรีภิรมย์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
   // เภสัชกรรมฉุกเฉิน (ER)
   {emp_id:'EMP011', name:'มณีรัตน์ ใจงาม',  dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:2, role:'viewer'},
   {emp_id:'EMP012', name:'อนุชา ศรีทอง',    dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:3, role:'viewer'},
@@ -335,12 +421,108 @@ const EMPLOYEES = [
   {emp_id:'EMP014', name:'สมหญิง ตั้งใจดี', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:2, role:'viewer'},
   {emp_id:'EMP015', name:'บุญเลิศ แสนดี',   dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:3, role:'viewer'},
   {emp_id:'EMP016', name:'พรทิพย์ วงศ์สุข', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:1, role:'viewer'},
+  // Imaging — พนักงานจริงจากไฟล์ Test_Med.xlsx (63 คน ใต้ เสริมศักดิ์ แสงเพ็ชร / ฤทธิไกร วงศ์ปัญญา)
+  {emp_id:'614512', name:'ธัญญลักษณ์ เตชะสุริยาวงศ์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'599576', name:'เมธาวดี หาริตะวัน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'580799', name:'พัชรินทร์ อาษาธง', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'580858', name:'ปทุมพร อ่อนดี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'611884', name:'กีรฏิยา ชัยชนะ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'611121', name:'อัฐภิญญาพร ระมั่ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'623704', name:'เอกณัฐ ทนงูเหลือม', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'624377', name:'ศริญญา เย็นประเสริฐ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'110151', name:'ปิ่นกันยา นาสวน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'621162', name:'กำพล หมั่นอารี', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'607205', name:'นพมาศ อุดนัน', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'567344', name:'ศิริขวัญ ฝั่งซ้าย', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'601712', name:'ณัฐธยาน์ บุญมี', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'541974', name:'ชนิตา เจือจาน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'600574', name:'รัฐนันท์ เจียรประเสริฐพร', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'534456', name:'สุภัสรา พึ่งตาแสง', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'545990', name:'วิภารัตน์ โกสิลารัตน์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'546404', name:'วัลลภา เหล่าภักดี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'600624', name:'ทิราภรณ์ แนวอินทร์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'610247', name:'อาณยา แซ่เอีย', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'592545', name:'กมลลักษณ์ พานวิจิตรา', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'625218', name:'อนันตศักดิ์ ฮุงหวน', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'533400', name:'กฤชพล ปัญบุญมี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'533420', name:'ปรีดาวรรณ ทิพย์รัตน์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'578635', name:'สุนิศา นาคราช', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'539571', name:'รจเรข ทองยศ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'532786', name:'ยุภา ประกอบแก้ว', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'536175', name:'อมรรัตน์ แยบกระโทก', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'112425', name:'ทชภณ ศรีธรรมมา', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'586056', name:'ธิดารัตน์ บุตตะ', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'112424', name:'อภิญญา รักษาพันธ์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'581875', name:'จุฑามาศ บุญเกษม', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'547563', name:'ชไมพร โลราช', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'580698', name:'ชลณัชชา โคตรพัฒน์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'515996', name:'จิราพร พะวงษ์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'518171', name:'ทิชากร คงแก้ว', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'575215', name:'สุภัค โกสีย์เจริญ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'567340', name:'ณิชาภัทร แซ่ปึ้ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'567342', name:'ปารัชญ์ ชีพอรุณ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'570502', name:'อภิษฎา เพ็ชรเจริญ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'546734', name:'กุลภัสสร์ คำตีด', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'583821', name:'นุชนาฎ พิมพ์วิเศษ', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'529739', name:'เบญจมาภรณ์ ผิวหล่อ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'113058', name:'วิภาภรณ์ เหวันต์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'519821', name:'กิ่งกาญจน์ อ่อนจันทร์อม', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'519822', name:'ศรัญญา บุตรหนัน', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'110147', name:'ภิสันต์ ศาสตร์เฟื่องฟู', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
+  {emp_id:'571742', name:'อชิรญาณ์ ร่วมจิตร', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'571747', name:'ธัชพล ศิริทรัพย์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'560354', name:'ภูริช หาญเทวี', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'550655', name:'ณัฐสุดา แซมมงคล', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'550727', name:'กฤติยา กะรัตน์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'510298', name:'อังศุมาจิน ทิพย์จันทร์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'110153', name:'ธีรภัทร แก้วหาญ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
+  {emp_id:'110160', name:'ปรียาภรณ์ พรานบุญ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
+  {emp_id:'112173', name:'สุจิตรา เหล็กคม', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
+  {emp_id:'550725', name:'เบญจวรรณ แซ่ตั้ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'viewer'},
+  {emp_id:'503288', name:'บุปผา ทองย่อย', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'515946', name:'ชินพันธ์ กรฤทธิ์วรพัฒน์', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:3, role:'viewer'},
+  {emp_id:'543489', name:'ณัฐธิดา เวียงลอ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
+  {emp_id:'113515', name:'ภัศรินทร์ สะอาด', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
+  {emp_id:'530507', name:'อมรพรรณ เชิญรัมย์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
+  {emp_id:'112799', name:'สุวัฒน์ชัย ส่งแสง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'viewer'},
+  // Pathology + Physical Therapy — พนักงานจริง (28 คน ใต้ เมตตา จารุกิจจรูญ)
+  {emp_id:'603860', name:'วินัย เบ้าทอง', dept:'Pathology (เมตตา)', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'562552', name:'วริศรา อุ่นผูก', dept:'Pathology (เมตตา)', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'553420', name:'มณฑารพ ตื้อแก้ว', dept:'Pathology (เมตตา)', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'592264', name:'ณัชวรัตม์ จันทร์งาม', dept:'Physical Therapy (เมตตา)', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'591395', name:'รุ่งนภาพร ทองวิเศษ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:1, role:'viewer'},
+  {emp_id:'110170', name:'ดวงตรา วงค์แสง', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'560865', name:'วิชุดา ลาปีอี', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'569683', name:'รัตติญา บุญรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'533177', name:'ช่อทิพย์ แข็งขัน', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'112559', name:'ขวัญตา กาหลงรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'113706', name:'วรรณี ศรีธาตุ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'522118', name:'ขนิษฐา สมปิตะ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'529287', name:'สุคนธ์ทิพย์ ตลอดพงษ์', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'515986', name:'กิตติกร มหาวรรณ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
+  {emp_id:'623790', name:'ดวงสมร แก้วรุ่งเรือง', dept:'Physical Therapy (เมตตา)', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'590135', name:'พรรณทิภา ประยูรรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'506788', name:'ชวลิต จงหอมขจร', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'505836', name:'กอบทอง เฉลิมชัย', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'505837', name:'ณัฐวุฒิ วัยเจริญ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'114118', name:'อุดมเดช พัฒนะจุฑา', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'111818', name:'พินิจ วิทยสุนทร', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'112651', name:'ปิยะดา บุญสิงห์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'113531', name:'พรพรรณ ประกายสันติสุข', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'111806', name:'สุชาดา ตั้งจิตเพียรพงศ์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'111268', name:'วันทนีย์ กมลเสถียรรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'111794', name:'รัชดาภรณ์ พรมปัญญา', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'551597', name:'วัชริตา ฤกษ์วัฒนสิริกุล', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'112124', name:'ศิริลักษณ์ เจริญศิริ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:4, role:'viewer'},
   // Manager / HR — 1 หัวหน้าต่อ 1 สายงาน (เห็นเฉพาะลูกทีมสายงานตัวเอง)
-  {emp_id:'MGR001', name:'ภญ. สุพร แสงชัย', dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'MGR002', name:'ภญ. อรวรรณ ทองสุข', dept:'เภสัชกรรม IPD', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'MGR001', name:'วรินรัตน์ ฤทธิ์รอด', dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'MGR002', name:'อภิรักษ์ ปัญญาดี', dept:'เภสัชกรรม IPD', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'MGR003', name:'ภก. ธีรพงศ์ ศรีวิไล', dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'MGR004', name:'คุณสมพร ใจซื่อ', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:3, role:'evaluator'},
   {emp_id:'MGR005', name:'ภญ. นันทวัน เจริญสุข', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'524389', name:'เสริมศักดิ์ แสงเพ็ชร', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'112354', name:'ฤทธิไกร วงศ์ปัญญา', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'110167', name:'เมตตา จารุกิจจรูญ', dept:'Pathology (เมตตา)', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'HR001',  name:'ฝ่าย HR — คุณกัลยา', dept:'HR', group:null, level:null, role:'admin'},
   // Thai Insurance (UR Officer) — ข้อมูลจริงจากไฟล์ Test_Demo.xlsx
   {emp_id:'021037', name:'ประกายดาว อุดมธนโภคิน', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'viewer'},
@@ -355,35 +537,12 @@ const EMPLOYEES = [
 
 // mutable in-memory "assessments" store for the demo session
 // (พนักงานบางคนตั้งใจไม่มี record เลย เพื่อจำลอง "ยังไม่เข้าทำประเมิน")
+// พนักงานจริง 97 คนใน OPD/IPD (ทีมวรินรัตน์/อภิรักษ์) ยังไม่มีผลประเมิน — รอหัวหน้ากรอกจริงตอน UAT
 let ASSESSMENTS = [
-  {session_id:'S1001', emp_id:'EMP001', level:2, group:'med_support', status:'approved',
-   c1_annual:88, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:470,
-   c2_func:90, c2_b5f:4.3, c3_team:80, c4_train:65, c5_lead:75,
-   total:0, updated:'25 มิ.ย. 2569'},
-  {session_id:'S1002', emp_id:'EMP002', level:1, group:'med_support', status:'submitted',
-   c1_annual:82, c1_unit:79, c1_eng_type:'toeic', c1_eng_val:410,
-   c2_func:78, c2_b5f:4.0, c3_team:60, c4_train:60, c5_lead:50,
-   total:0, updated:'24 มิ.ย. 2569'},
   {session_id:'S1003', emp_id:'EMP004', level:1, group:'assistant', status:'draft',
    c1_annual:null, c1_unit:null, c1_eng_type:null, c1_eng_val:null,
    c2_func:null, c2_b5f:null, c3_team:null, c4_train:null, c5_lead:null,
    total:0, updated:'—'},
-  {session_id:'S1004', emp_id:'EMP003', level:3, group:'med_support', status:'approved',
-   c1_annual:70, c1_unit:65, c1_eng_type:'toeic', c1_eng_val:460,
-   c2_func:72, c2_b5f:3.8, c3_team:55, c4_train:50, c5_lead:40,
-   total:0, updated:'23 มิ.ย. 2569'},
-  {session_id:'S1005', emp_id:'EMP006', level:4, group:'med_support', status:'approved',
-   c1_annual:92, c1_unit:90, c1_eng_type:'speaking', c1_eng_val:5,
-   c2_func:95, c2_b5f:4.5, c3_team:88, c4_train:80, c5_lead:90,
-   total:0, updated:'22 มิ.ย. 2569'},
-  {session_id:'S1006', emp_id:'EMP008', level:3, group:'med_support', status:'submitted',
-   c1_annual:85, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:455,
-   c2_func:80, c2_b5f:4.1, c3_team:70, c4_train:60, c5_lead:65,
-   total:0, updated:'24 มิ.ย. 2569'},
-  {session_id:'S1007', emp_id:'EMP009', level:2, group:'med_support', status:'approved',
-   c1_annual:65, c1_unit:60, c1_eng_type:'toeic', c1_eng_val:440,
-   c2_func:60, c2_b5f:3.6, c3_team:50, c4_train:45, c5_lead:35,
-   total:0, updated:'21 มิ.ย. 2569'},
   {session_id:'S1008', emp_id:'EMP011', level:2, group:'med_support', status:'approved',
    c1_annual:80, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:450,
    c2_func:82, c2_b5f:4.15, c3_team:75, c4_train:60, c5_lead:60,
@@ -435,7 +594,7 @@ ASSESSMENTS.push(
 
 let AUDIT_LOG = [
   {t:'25/06 09:14', who:'EMP001', action:'Login สำเร็จ', ip:'192.168.1.45'},
-  {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001)', ip:'192.168.1.10'},
+  {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001) โดย วรินรัตน์ ฤทธิ์รอด', ip:'192.168.1.10'},
   {t:'25/06 09:31', who:'HR001',  action:'Approve ผลประเมิน S1001', ip:'10.0.5.2'},
   {t:'24/06 14:02', who:'EMP002', action:'Login ล้มเหลว (รหัสผ่านผิด)', ip:'203.150.x.x'},
   {t:'24/06 14:03', who:'EMP002', action:'Login สำเร็จ', ip:'203.150.x.x'},
@@ -448,52 +607,6 @@ let currentUser = null;
    ============================================================ */
 const B5F_MIN = 4.0; // เกณฑ์ขั้นต่ำ B5F คงที่ทุก Level ทุกกลุ่ม — มติผู้บริหาร (Threshold Gate ไม่ใช่สัดส่วน)
 const SPEAKING_MIN = 4; // เกณฑ์ Speaking Test ขั้นต่ำ = Level 4 คงที่ทุก Career Level (คนละสเกลกับ TOEIC)
-
-// ===== เกณฑ์ "ภาคบังคับ" (Mandatory Pass Criteria) — มติผู้บริหาร =====
-// ถ้าหัวข้อใดหัวข้อหนึ่งต่อไปนี้ไม่ถึงเกณฑ์ขั้นต่ำ ระบบจะสรุปผลรวมเป็น "ไม่ผ่าน (Failed)" ทันที
-// แม้ว่าคะแนนรวมเฉลี่ยทั้งหมดจะถึง 80% ก็ตาม (Threshold Gate ระดับ "ผลสรุปรวม" ไม่ใช่แค่ระดับหัวข้อย่อย)
-const MANDATORY_RULES = {
-  c1_annual: { min: 80, label: 'Annual Test', unit: '%' },
-  c1_unit:   { min: 80, label: 'Unit Competency', unit: '%' },
-  c4_train:  { min: 100, label: 'ชั่วโมงอบรม (Training Hours)', unit: '% ของเกณฑ์ 60 ชม./ปี' }
-};
-
-/* ตรวจสอบหัวข้อภาคบังคับทั้งหมดของ 1 การประเมิน
-   คืนค่าเป็น array ของหัวข้อที่ "ไม่ผ่าน" เท่านั้น (ว่าง = ผ่านครบทุกหัวข้อภาคบังคับ)
-   หมายเหตุ: ถ้ายังไม่มีการกรอกคะแนน (null) จะยังไม่ถือว่า "ตกเกณฑ์" เพราะยังประเมินไม่เสร็จ */
-function getMandatoryFailures(a){
-  const fails = [];
-  Object.keys(MANDATORY_RULES).forEach(key=>{
-    const rule = MANDATORY_RULES[key];
-    const val = a[key];
-    if(val!=null && val < rule.min){
-      fails.push({ key, label: rule.label, achieved: val, min: rule.min, unit: rule.unit });
-    }
-  });
-  return fails;
-}
-
-/* สรุปผล "ผ่าน/ไม่ผ่าน" ของการประเมิน 1 รายการ โดยรวม Logic เกณฑ์ภาคบังคับเข้ากับคะแนนรวม
-   Logic: ผ่าน = คะแนนรวม ≥ 80  AND  ไม่มีหัวข้อภาคบังคับใดตกเกณฑ์
-          ไม่ผ่าน = คะแนนรวม < 80  OR  มีหัวข้อภาคบังคับอย่างน้อย 1 หัวข้อตกเกณฑ์ */
-function evalResult(a){
-  const total = calcScore(a);
-  const mandatoryFails = getMandatoryFailures(a);
-  const scorePass = total>=80;
-  const pass = scorePass && mandatoryFails.length===0;
-  // failReason ใช้สรุปสาเหตุแบบสั้นๆ สำหรับแสดงผล/Export
-  let failReason = null;
-  if(!pass){
-    if(mandatoryFails.length>0 && scorePass){
-      failReason = 'ตกเกณฑ์หัวข้อภาคบังคับ';
-    } else if(mandatoryFails.length>0 && !scorePass){
-      failReason = 'คะแนนรวมไม่ถึงเกณฑ์ + ตกเกณฑ์หัวข้อภาคบังคับ';
-    } else if(!scorePass){
-      failReason = 'คะแนนรวมไม่ถึงเกณฑ์ 80';
-    }
-  }
-  return { total, pass, mandatoryFails, failReason };
-}
 
 // Sub-criteria ของ C3 (Team Participation) และ C5 (Leadership) — จำนวนและชื่อ Sub เปลี่ยนไปตาม Level ตามไฟล์เกณฑ์จริง
 // max = เกณฑ์เต็ม/เกณฑ์อ้างอิงของ Sub นั้น · weight = น้ำหนักคะแนนที่ได้ถ้าทำได้เต็ม max
@@ -576,27 +689,27 @@ function scoreBreakdown(a){
   const engMin = cfg.english[a.level].toeic;
   const rows = [];
 
-  // ---- C1-1 Annual Test (ภาคบังคับ — เกณฑ์ผ่าน ≥80%) ----
+  // ---- C1-1 Annual Test ----
   {
     const v=a.c1_annual, max=w.c1_annual[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
-    const flagPass = v!=null? v>=MANDATORY_RULES.c1_annual.min : null;
-    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ผ่าน = 80% (ภาคบังคับ)', mandatory:true,
-      desc:'สอบความรู้เภสัชกรรมประจำปี · คะแนนให้ตามสัดส่วนจริงที่ทำได้ · หัวข้อนี้เป็น "ภาคบังคับ" หากได้ต่ำกว่า 80% ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
+    const flagPass = v!=null? v>=80 : null;
+    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ผ่าน = 80%',
+      desc:'สอบความรู้เภสัชกรรมประจำปี · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80% (ภาคบังคับ)':'ตกเกณฑ์ภาคบังคับ ≥80%'),
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
       gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c1_annual', a.group, a.level)});
   }
-  // ---- C1-2 Unit Competency (ภาคบังคับ — เกณฑ์ผ่าน ≥80%) ----
+  // ---- C1-2 Unit Competency ----
   {
     const v=a.c1_unit, max=w.c1_unit[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
-    const flagPass = v!=null? v>=MANDATORY_RULES.c1_unit.min : null;
-    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ผ่าน = 80% (ภาคบังคับ)', mandatory:true,
-      desc:'แบบประเมิน Unit Competency Checklist · คะแนนให้ตามสัดส่วนจริงที่ทำได้ · หัวข้อนี้เป็น "ภาคบังคับ" หากได้ต่ำกว่า 80% ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
+    const flagPass = v!=null? v>=80 : null;
+    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ผ่าน = 80%',
+      desc:'แบบประเมิน Unit Competency Checklist · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80% (ภาคบังคับ)':'ตกเกณฑ์ภาคบังคับ ≥80%'),
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
       gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c1_unit', a.group, a.level)});
   }
@@ -657,16 +770,14 @@ function scoreBreakdown(a){
       earned: a.c3_team!=null? Math.round(pct(a.c3_team)*w.c3_team[idx]*10)/10 : null, flagPass:null, flagLabel:null, gap:null, ref:c3ref});
   }
 
-  // ---- C4 Training Hours (ภาคบังคับ — เกณฑ์เต็ม 60 ชม./ปี = 100%) ----
+  // ---- C4 Training Hours ----
   {
     const v=a.c4_train, max=w.c4_train[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
     const isHrs = typeof v==='number' && v>100;
-    const flagPass = (v!=null && !isHrs)? v>=MANDATORY_RULES.c4_train.min : null;
-    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์เต็ม = 60 ชม./ปี (ภาคบังคับ)', mandatory:true,
-      desc:'รวมชั่วโมงอบรม Clinical Training (≥30 ชม.) + Mandatory Training (≥30 ชม.) · ให้คะแนนตามสัดส่วนชั่วโมงจริง · หัวข้อนี้เป็น "ภาคบังคับ" หากอบรมไม่ครบ 60 ชม./ปี ผลรวมทั้งหมดจะถูกตัดสินเป็น "ไม่ผ่าน" ทันที',
-      achieved: v!=null? v+(isHrs?' ชม.':'%'):'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านเกณฑ์ภาคบังคับ 60 ชม./ปี':'ตกเกณฑ์ภาคบังคับ (ไม่ครบ 60 ชม./ปี)'),
+    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์เต็ม = 60 ชม./ปี',
+      desc:'รวมชั่วโมงอบรม Clinical Training (≥30 ชม.) + Mandatory Training (≥30 ชม.) · ให้คะแนนตามสัดส่วนชั่วโมงจริง',
+      achieved: v!=null? v+(isHrs?' ชม.':'%'):'—', max, earned, flagPass:null, flagLabel:null,
       gap: (v!=null && v<100 && !isHrs)? `เข้าอบรมเพิ่มอีกให้ครบ 60 ชม./ปี จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
       ref: buildLevelRef('c4_train', a.group, a.level)});
   }
@@ -724,21 +835,28 @@ function calcScore(a){
 /* ============================================================
    LOGIN
    ============================================================ */
-function initLoginOptions(){
-  const sel = document.getElementById('login-emp');
-  EMPLOYEES.forEach(e=>{
-    const opt = document.createElement('option');
-    opt.value = e.emp_id;
-    const roleLabel = e.role==='viewer'?'พนักงาน':e.role==='evaluator'?'หัวหน้างาน':'HR Admin';
-    opt.textContent = `${e.emp_id} — ${e.name} (${roleLabel})`;
-    sel.appendChild(opt);
-  });
-}
-
+/* ============================================================
+   LOGIN — พิมพ์รหัสพนักงานเอง (ไม่ใช้ Dropdown เพราะข้อมูลจริงมี 300-400+ คน)
+   ============================================================ */
 function doLogin(){
-  const empId = document.getElementById('login-emp').value;
-  if(!empId){ toast('กรุณาเลือกรหัสพนักงานเพื่อทดสอบ'); return; }
-  currentUser = EMPLOYEES.find(e=>e.emp_id===empId);
+  const input = document.getElementById('login-emp-input');
+  const errBox = document.getElementById('login-error');
+  const empId = input.value.trim();
+  errBox.style.display = 'none';
+
+  if(!empId){
+    errBox.textContent = 'กรุณากรอกรหัสพนักงาน';
+    errBox.style.display = 'block';
+    return;
+  }
+  const user = EMPLOYEES.find(e=>e.emp_id===empId);
+  if(!user){
+    errBox.textContent = 'ไม่พบรหัสพนักงานนี้ในระบบ — ตรวจสอบรหัสอีกครั้ง';
+    errBox.style.display = 'block';
+    AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'Login ล้มเหลว (ไม่พบรหัสพนักงาน)', ip:'127.0.0.1'});
+    return;
+  }
+  currentUser = user;
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Login สำเร็จ (Demo)', ip:'127.0.0.1'});
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -750,6 +868,8 @@ function logout(){
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-pw').value='';
+  document.getElementById('login-emp-input').value='';
+  document.getElementById('login-error').style.display='none';
 }
 
 function nowStr(){
@@ -847,15 +967,14 @@ function renderBreakdownCards(a){
         return `<div class="item-row">
           <div class="item-flex">
             <div class="item-left">
-              <div class="item-name">${r.name}${r.mandatory?' <span style="font-size:10px;font-weight:800;color:#fff;background:var(--red);padding:2px 8px;border-radius:7px;vertical-align:middle">ภาคบังคับ</span>':''}</div>
-              ${r.standard? `<div class="item-standard" style="${r.mandatory?'background:var(--red)':''}">🎯 ${r.standard}</div>`:''}
+              <div class="item-name">${r.name}</div>
+              ${r.standard? `<div class="item-standard">🎯 ${r.standard}</div>`:''}
               <div class="item-desc">${r.desc}</div>
               <div class="item-mid">
                 ${done?`<span class="item-achieved">ผลที่ได้: ${r.achieved}</span>`:''}
                 ${r.flagLabel? `<span class="${r.flagPass?'flag-pass':'flag-fail'}">${r.flagPass?'✓ ':'✗ '}${r.flagLabel}</span>`:''}
               </div>
               ${r.gap? `<div class="item-gap">💡 <b>ต้องปรับปรุง:</b> ${r.gap}</div>` : (done && full? `<div class="item-gap" style="background:var(--green-l);color:var(--green-d)">✓ ได้คะแนนเต็มในหัวข้อนี้แล้ว</div>`:'')}
-              ${r.mandatory && r.flagPass===false? `<div class="item-gap" style="background:var(--red-l);color:var(--red);font-weight:700">🚫 หัวข้อภาคบังคับนี้ไม่ผ่านเกณฑ์ — จะทำให้ผลสรุปรวมเป็น "ไม่ผ่าน (Failed)" ทันที ไม่ว่าคะแนนรวมจะถึง 80 หรือไม่</div>`:''}
             </div>
             <div class="item-right ${panelClass}">
               <div class="item-score-big" style="color:${numColor}">${done? r.earned : '—'}</div>
@@ -870,26 +989,11 @@ function renderBreakdownCards(a){
   }).join('');
 }
 
-/* กล่องแจ้งเตือนสีแดง — แสดงเมื่อผลสรุปรวมเป็น "ไม่ผ่าน" เพราะตกเกณฑ์หัวข้อภาคบังคับ
-   ใช้ร่วมกันในหน้า ผลของฉัน / ประวัติ / รออนุมัติ เพื่อให้พนักงานและหัวหน้างานเห็นสาเหตุชัดเจน */
-function mandatoryWarningBox(mandatoryFails){
-  if(!mandatoryFails || !mandatoryFails.length) return '';
-  return `<div style="background:var(--red-l);border:1.5px solid var(--red);border-radius:12px;padding:14px 18px;margin-top:12px">
-    <div style="display:flex;align-items:center;gap:8px;color:var(--red);font-weight:800;font-size:14px;margin-bottom:8px">
-      🚫 ตกเกณฑ์หัวข้อภาคบังคับ (Mandatory Criteria Failed)
-    </div>
-    <div style="font-size:12px;color:var(--text);margin-bottom:8px">แม้คะแนนรวมเฉลี่ยอาจถึงเกณฑ์ 80% แต่ระบบสรุปผลโดยรวมเป็น <b>"ไม่ผ่าน (Failed)"</b> ทันที เนื่องจากหัวข้อภาคบังคับต่อไปนี้ไม่ถึงเกณฑ์ขั้นต่ำที่กำหนด:</div>
-    <ul style="margin:0 0 0 18px;font-size:12.5px;color:var(--text);line-height:1.9">
-      ${mandatoryFails.map(f=>`<li><b>${f.label}</b>: ทำได้ <b style="color:var(--red)">${f.achieved}${f.key==='c1_annual'||f.key==='c1_unit'?'%':'%'}</b> (เกณฑ์ขั้นต่ำ ${f.min}${f.unit})</li>`).join('')}
-    </ul>
-  </div>`;
-}
-
 function renderResult(c){
   const a = ASSESSMENTS.find(x=>x.emp_id===currentUser.emp_id);
   if(!a){ c.innerHTML = `<div class="card"><div class="empty">ยังไม่มีผลการประเมินสำหรับรอบนี้</div></div>`; return; }
-  const {total, pass, mandatoryFails} = evalResult(a);
-  a.total = total;
+  a.total = calcScore(a);
+  const pass = a.total>=80;
   const cfg = CONFIG[a.group];
 
   c.innerHTML = `
@@ -902,8 +1006,7 @@ function renderResult(c){
       <span class="badge ${pass?'badge-pass':'badge-fail'}" style="font-size:13px;padding:6px 16px">${pass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}</span>
     </div>
     <div class="progress-wrap"><div class="progress-fill ${pass?'':'fail'}" style="width:${Math.min(a.total,100)}%"></div></div>
-    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน และต้องผ่านหัวข้อภาคบังคับทุกข้อ (Annual Test ≥80%, Unit Competency ≥80%, ชั่วโมงอบรม ≥60 ชม./ปี)</div>
-    ${mandatoryWarningBox(mandatoryFails)}
+    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน</div>
   </div>
 
   ${renderBreakdownCards(a)}
@@ -931,12 +1034,10 @@ function renderHistory(c){
   });
   if(!list.length){ c.innerHTML = `<div class="card"><div class="empty">ยังไม่มีประวัติ</div></div>`; return; }
   c.innerHTML = list.map(a=>{
-    const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
-    const result = a.status!=='draft'? evalResult(a) : null;
     a.total = calcScore(a);
-    const pass = result? result.pass : false;
+    const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
+    const pass = a.status!=='draft' && a.total>=80;
     const scoreColor = a.status==='draft' ? 'var(--text-2)' : (pass? 'var(--green-d)':'var(--red)');
-    const mandatoryTag = (result && result.mandatoryFails.length)? `<span style="font-size:10px;font-weight:800;color:#fff;background:var(--red);padding:2px 8px;border-radius:7px">🚫 ตกเกณฑ์ภาคบังคับ</span>` : '';
     return `<div style="margin-bottom:14px">
       <div class="card" style="margin-bottom:0;cursor:pointer" onclick="toggleHistDetail('${a.session_id}')">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -945,15 +1046,13 @@ function renderHistory(c){
             <div style="font-size:11.5px;color:var(--text-2);margin-top:2px">${CONFIG[a.group].labels[a.level]} · อัปเดตล่าสุด ${a.updated}</div>
           </div>
           <div style="display:flex;align-items:center;gap:12px">
-            ${mandatoryTag}
-            <span class="badge badge-${a.status==='approved'||a.status==='submitted'||a.status==='draft'?a.status:'fail'}">${a.status==='draft'||a.status==='submitted'?statusLabel(a.status):(pass?'อนุมัติแล้ว (ผ่าน)':'อนุมัติแล้ว (ไม่ผ่าน)')}</span>
+            <span class="badge badge-${a.status}">${statusLabel(a.status)}</span>
             <div style="font-weight:800;font-size:16px;color:${scoreColor};min-width:38px;text-align:right">${a.status==='draft'?'—':a.total}</div>
             <span id="hist-arrow-${a.session_id}" style="color:var(--text-2);font-size:12px">▾ ดูรายละเอียด</span>
           </div>
         </div>
       </div>
       <div id="hist-detail-${a.session_id}" style="display:none;margin-top:8px">
-        ${result? mandatoryWarningBox(result.mandatoryFails) : ''}
         ${renderBreakdownCards(a)}
       </div>
     </div>`;
@@ -1033,7 +1132,7 @@ function loadAssessForm(){
     <div style="font-size:12.5px;color:var(--text-2);margin:14px 0">${cfg.labels[a.level]} · Session ${a.session_id}</div>
 
     <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)${locked}</div><div class="rate-locked">${a.c1_annual ?? '—'}</div></div>
-    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ผ่าน ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="in-unit" value="${a.c1_unit ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ผ่าน ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="in-unit" value="${a.c1_unit ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C1-3 English Test${locked}</div><div class="rate-locked">${a.c1_eng_val ? (a.c1_eng_type.toUpperCase()+' '+a.c1_eng_val) : '—'}</div></div>
     <div class="rate-row"><div class="rate-name">C2-1 Function Role (%)</div><input class="rate-input" type="number" min="0" max="100" id="in-func" value="${a.c2_func ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C2-2 360°B5F (จากผลสำรวจภายในองค์กร)<small>เกณฑ์ผ่าน ≥${B5F_MIN} ทุก Level (มติผู้บริหาร)</small></div><input class="rate-input" type="number" step="0.1" min="0" max="5" id="in-b5f" value="${a.c2_b5f ?? ''}"></div>
@@ -1062,7 +1161,7 @@ function loadAssessForm(){
     </div>
 
     <div style="font-size:12.5px;font-weight:700;color:var(--green-d);margin:20px 0 8px">📊 ตัวอย่างผลคะแนนที่พนักงานจะเห็น (จากค่าที่บันทึกล่าสุด)</div>
-    <div id="assess-breakdown">${mandatoryWarningBox(getMandatoryFailures(a))}${renderBreakdownCards(a)}</div>`;
+    <div id="assess-breakdown">${renderBreakdownCards(a)}</div>`;
 
   // อัปเดต % ที่หัวมุมแบบ Real-time เมื่อพิมพ์
   [...c3subs].forEach(s=>document.getElementById('c3-'+s.id).addEventListener('input',()=>{
@@ -1115,8 +1214,8 @@ function deptStats(){
       if(a.status==='submitted'){ submitted++; return; }
       if(a.status==='approved'){
         approved++;
-        const {pass:isPass} = evalResult(a);
-        if(isPass) pass++; else fail++;
+        const score = calcScore(a);
+        if(score>=80) pass++; else fail++;
       }
     });
     return {dept, totalPeople:people.length, approved, submitted, draft, notStarted, pass, fail};
@@ -1136,7 +1235,7 @@ function conicGradient(segs){
 
 function renderDashboard(c){
   const pending = ASSESSMENTS.filter(a=>a.status==='submitted').length;
-  const passCountAll = ASSESSMENTS.filter(a=>a.status==='approved' && evalResult(a).pass).length;
+  const passCountAll = ASSESSMENTS.filter(a=>{ a.total=calcScore(a); return a.total>=80 && a.status==='approved'; }).length;
   const stats = deptStats();
   const totalStaff = EMPLOYEES.filter(e=>e.role==='viewer').length;
   const totalDone = stats.reduce((s,d)=>s+d.approved+d.submitted+d.draft,0);
@@ -1151,7 +1250,7 @@ function renderDashboard(c){
   <div class="grid-3" style="margin-bottom:16px">
     <div class="kpi"><div class="kpi-val">${totalDone}/${totalStaff}</div><div class="kpi-lbl">เข้าทำประเมินแล้ว</div></div>
     <div class="kpi"><div class="kpi-val">${pending}</div><div class="kpi-lbl">รอ HR อนุมัติ</div></div>
-    <div class="kpi"><div class="kpi-val">${passCountAll}</div><div class="kpi-lbl">ผ่านเกณฑ์ (≥80 + ผ่านภาคบังคับ)</div></div>
+    <div class="kpi"><div class="kpi-val">${passCountAll}</div><div class="kpi-lbl">ผ่านเกณฑ์ (≥80)</div></div>
   </div>
 
   <div class="card">
@@ -1194,7 +1293,7 @@ function renderDashboard(c){
 
   <div class="card">
     <div class="card-title">🎯 สัดส่วนผลประเมิน (IDP) — แยกตามแผนก</div>
-    <div style="font-size:11.5px;color:var(--text-2);margin-bottom:14px">นับเฉพาะรายที่อนุมัติผลแล้ว · ผ่าน = คะแนนรวม ≥80 และผ่านหัวข้อภาคบังคับครบ · สีแดง = ต้องทำแผนพัฒนารายบุคคล (IDP)</div>
+    <div style="font-size:11.5px;color:var(--text-2);margin-bottom:14px">นับเฉพาะรายที่อนุมัติผลแล้ว · สีแดง = ต้องทำแผนพัฒนารายบุคคล (IDP)</div>
     <div class="donut-hero">
       <div class="donut" style="background:${conicGradient([
         {color:'#1B5E3B', pct: overallAssessed? overallPassed/overallAssessed*100:0},
@@ -1247,13 +1346,10 @@ function renderDashboard(c){
     <table><tr><th>พนักงาน</th><th>แผนก</th><th>Level</th><th>คะแนน</th><th>สถานะ</th><th></th></tr>
     ${ASSESSMENTS.map(a=>{
       const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
-      const result = a.status!=='draft'? evalResult(a) : null;
-      const statusText = a.status==='approved'? (result.pass? 'อนุมัติแล้ว (ผ่าน)':'อนุมัติแล้ว (ไม่ผ่าน)') : statusLabel(a.status);
-      const badgeClass = a.status==='approved'? (result.pass?'approved':'fail') : a.status;
       return `<tr><td>${emp?emp.name:a.emp_id}</td><td>${emp?emp.dept:'—'}</td><td>L${a.level}</td>
-      <td>${a.status==='draft'?'—':calcScore(a)}</td><td><span class="badge badge-${badgeClass}">${statusText}</span></td>
+      <td>${a.status==='draft'?'—':a.total}</td><td><span class="badge badge-${a.status}">${statusLabel(a.status)}</span></td>
       <td><span style="color:var(--green-d);font-size:11.5px;cursor:pointer;font-weight:600" onclick="toggleHistDetail('${a.session_id}')" id="hist-arrow-${a.session_id}">▾ ดูรายละเอียด</span></td></tr>
-      <tr id="hist-detail-tr-${a.session_id}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${result? mandatoryWarningBox(result.mandatoryFails):''}${renderBreakdownCards(a)}</div></td></tr>`;
+      <tr id="hist-detail-tr-${a.session_id}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${renderBreakdownCards(a)}</div></td></tr>`;
     }).join('')}
     </table>
   </div>
@@ -1263,16 +1359,13 @@ function renderDashboard(c){
 
 /* ================= EXPORT: CSV (Excel) ================= */
 function exportCSV(){
-  const headers = ['รหัสพนักงาน','ชื่อ','แผนก','กลุ่ม','Level','Annual Test %','Unit Competency %','English Type','English Score','Function Role %','360°B5F','Team %','Training','Leadership %','คะแนนรวม','ผลสรุป','หมายเหตุภาคบังคับ','สถานะ','อัปเดตล่าสุด'];
+  const headers = ['รหัสพนักงาน','ชื่อ','แผนก','กลุ่ม','Level','Annual Test %','Unit Competency %','English Type','English Score','Function Role %','360°B5F','Team %','Training','Leadership %','คะแนนรวม','สถานะ','อัปเดตล่าสุด'];
   const rows = ASSESSMENTS.map(a=>{
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
-    const result = a.status!=='draft'? evalResult(a) : null;
-    const resultText = a.status==='draft' ? '' : (result.pass? 'ผ่าน':'ไม่ผ่าน');
-    const mandatoryNote = result && result.mandatoryFails.length ? result.mandatoryFails.map(f=>`${f.label} (${f.achieved}${f.unit})`).join('; ') : '';
     return [
       a.emp_id, emp?emp.name:'', emp?emp.dept:'', a.group==='med_support'?'Med Support':'ผู้ช่วย', a.level,
       a.c1_annual??'', a.c1_unit??'', a.c1_eng_type??'', a.c1_eng_val??'', a.c2_func??'', a.c2_b5f??'',
-      a.c3_team??'', a.c4_train??'', a.c5_lead??'', a.status==='draft'?'':calcScore(a), resultText, mandatoryNote, statusLabel(a.status), a.updated
+      a.c3_team??'', a.c4_train??'', a.c5_lead??'', a.status==='draft'?'':calcScore(a), statusLabel(a.status), a.updated
     ];
   });
   const csv = '\uFEFF'+[headers, ...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
@@ -1292,15 +1385,14 @@ function exportPDF(){
   const rows = ASSESSMENTS.map(a=>{
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
     const total = a.status==='draft'?'—':calcScore(a);
-    const result = a.status!=='draft'? evalResult(a) : null;
-    const resultLabel = a.status==='draft'?'—':(result.pass?'ผ่าน':(result.mandatoryFails.length?'ไม่ผ่าน (ตกเกณฑ์บังคับ)':'ไม่ผ่าน'));
+    const pass = a.status!=='draft' && calcScore(a)>=80;
     return `<tr>
       <td>${a.emp_id}</td><td>${emp?emp.name:''}</td><td>${emp?emp.dept:''}</td><td>L${a.level}</td>
       <td>${a.c1_annual??'—'}</td><td>${a.c1_unit??'—'}</td>
       <td>${a.c1_eng_val? (a.c1_eng_type||'toeic').toUpperCase()+' '+a.c1_eng_val : '—'}</td>
       <td>${a.c2_func??'—'}</td><td>${a.c2_b5f??'—'}</td>
       <td>${a.c3_team!=null?a.c3_team+'%':'—'}</td><td>${a.c4_train??'—'}</td><td>${a.c5_lead!=null?a.c5_lead+'%':'—'}</td>
-      <td><b>${total}</b></td><td>${resultLabel}</td>
+      <td><b>${total}</b></td><td>${a.status==='draft'?'—':(pass?'ผ่าน':'ไม่ผ่าน')}</td>
     </tr>`;
   }).join('');
   box.innerHTML = `
@@ -1315,7 +1407,7 @@ function exportPDF(){
       <tr><th>รหัส</th><th>ชื่อ</th><th>แผนก</th><th>Lv</th><th>Annual</th><th>Unit</th><th>English</th><th>Function</th><th>360°B5F</th><th>Team</th><th>Training</th><th>Leadership</th><th>รวม</th><th>ผล</th></tr>
       ${rows}
     </table>
-    <div class="print-footer">เอกสารนี้สร้างจากระบบ E-Career Path — ใช้สำหรับส่งผลให้ผู้บริหารพิจารณาผลตอบแทน · หัวข้อภาคบังคับ: Annual Test ≥80%, Unit Competency ≥80%, ชั่วโมงอบรม ≥60 ชม./ปี</div>`;
+    <div class="print-footer">เอกสารนี้สร้างจากระบบ E-Career Path — ใช้สำหรับส่งผลให้ผู้บริหารพิจารณาผลตอบแทน</div>`;
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Export รายงาน PDF', ip:'127.0.0.1'});
   setTimeout(()=>window.print(), 150);
 }
@@ -1348,8 +1440,8 @@ function fullEditFormHtml(a, prefix){
   const c5subs = SUB_CONFIG[a.group].c5[a.level];
   const isHrs = a.c4_train!=null && a.c4_train>100;
   return `
-    <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)<small>เกณฑ์ ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-annual" value="${a.c1_annual ?? ''}"></div>
-    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ ≥80% (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-unit" value="${a.c1_unit ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)<small>เกณฑ์ ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-annual" value="${a.c1_annual ?? ''}"></div>
+    <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-unit" value="${a.c1_unit ?? ''}"></div>
     <div class="rate-row" style="align-items:flex-start">
       <div class="rate-name">C1-3 English Test<small id="${prefix}-eng-hint">${a.c1_eng_type==='speaking'?`เกณฑ์ผ่าน = Speaking Level ${SPEAKING_MIN} · กรอกระดับ Speaking (1-5)`:`เกณฑ์ผ่าน = TOEIC ${engMin} · กรอกคะแนน TOEIC`}</small></div>
       <div>
@@ -1363,7 +1455,7 @@ function fullEditFormHtml(a, prefix){
     </div>
     <div class="rate-row"><div class="rate-name">C2-1 Function Role (%)</div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-func" value="${a.c2_func ?? ''}"></div>
     <div class="rate-row"><div class="rate-name">C2-2 360°B5F (ผลสำรวจภายในองค์กร)<small>เกณฑ์ ≥${B5F_MIN} ทุก Level</small></div><input class="rate-input" type="number" step="0.1" min="0" max="5" id="${prefix}-b5f" value="${a.c2_b5f ?? ''}"></div>
-    <div class="rate-row"><div class="rate-name">C4 Training Hours (%)<small>เกณฑ์เต็ม 60 ชม./ปี (ภาคบังคับ)</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-train" value="${isHrs? '' : (a.c4_train ?? '')}"></div>
+    <div class="rate-row"><div class="rate-name">C4 Training Hours (%)<small>เกณฑ์เต็ม 60 ชม./ปี</small></div><input class="rate-input" type="number" min="0" max="100" id="${prefix}-train" value="${isHrs? '' : (a.c4_train ?? '')}"></div>
 
     <div class="crit-group">
       <div class="crit-head"><span class="crit-head-name">C3 — Team Participation</span></div>
@@ -1379,8 +1471,7 @@ function renderApprove(c){
   const list = ASSESSMENTS.filter(a=>a.status==='submitted');
   if(!list.length){ c.innerHTML = `<div class="card"><div class="empty">ไม่มีรายการรออนุมัติในขณะนี้ 🎉</div></div>`; return; }
   c.innerHTML = list.map(a=>{
-    const {total, pass, mandatoryFails} = evalResult(a);
-    a.total = total;
+    a.total = calcScore(a);
     const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
     const cfg = CONFIG[a.group];
     return `<div class="card">
@@ -1390,11 +1481,10 @@ function renderApprove(c){
           <div style="font-size:12px;color:var(--text-2)">${cfg.labels[a.level]}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:22px;font-weight:800;color:${pass?'var(--green)':'var(--red)'}">${a.total}</div>
-          <div style="font-size:10.5px;color:var(--text-2)">คะแนนรวม · ${pass?'ผ่านเกณฑ์':'ไม่ผ่านเกณฑ์'}</div>
+          <div style="font-size:22px;font-weight:800;color:${a.total>=80?'var(--green)':'var(--red)'}">${a.total}</div>
+          <div style="font-size:10.5px;color:var(--text-2)">คะแนนรวม</div>
         </div>
       </div>
-      ${mandatoryWarningBox(mandatoryFails)}
       <div style="font-size:12px;font-weight:700;color:var(--green-d);margin:16px 0 4px">📋 รายละเอียดคะแนนทุกหัวข้อ (ค่าปัจจุบัน)</div>
       ${renderBreakdownCards(a)}
 
@@ -1431,10 +1521,9 @@ function approveSession(sid){
 
   a.status = 'approved';
   a.updated = nowStr();
-  const result = evalResult(a);
-  a.total = result.total;
-  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Approve ผลประเมิน (แก้ไข+อนุมัติ) '+sid+(result.pass?' — ผลสรุป: ผ่าน':' — ผลสรุป: ไม่ผ่าน'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':'')), ip:'127.0.0.1'});
-  toast(result.pass? 'อนุมัติผลเรียบร้อย ✓ ผ่านเกณฑ์ — ส่งผลให้ผู้บริหารแล้ว' : 'อนุมัติผลเรียบร้อย — ผลสรุป: ไม่ผ่านเกณฑ์'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':''));
+  a.total = calcScore(a);
+  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Approve ผลประเมิน (แก้ไข+อนุมัติ) '+sid, ip:'127.0.0.1'});
+  toast('อนุมัติผลเรียบร้อย ✓ ส่งผลให้ผู้บริหารแล้ว');
   renderApprove(document.getElementById('content'));
 }
 function rejectSession(sid){
@@ -1485,10 +1574,8 @@ function toggleEmpEdit(empId){
     }
     const isManager = emp.role==='evaluator';
     const box = document.getElementById('emp-detail-'+empId);
-    const mFails = a.status!=='draft'? getMandatoryFailures(a) : [];
     box.innerHTML = `
       ${isManager? `<div class="tip-box" style="margin-bottom:12px"><b>⚠️ หัวหน้างาน — HR เป็นผู้กรอก/แก้ไขคะแนนแทนทั้งหมด</b><br>เพื่อป้องกันหัวหน้าให้คะแนนตัวเอง ระบบไม่ให้ Manager เลือกตัวเองในหน้า "ประเมินพนักงาน" — HR จึงทำหน้าที่กรอกคะแนนครบทุกหัวข้อ (C1–C5) ให้หัวหน้างานโดยตรงแทน</div>` : ''}
-      ${mandatoryWarningBox(mFails)}
       <div style="font-size:12px;font-weight:700;color:var(--green-d);margin-bottom:8px">📋 รายละเอียดปัจจุบัน</div>
       ${renderBreakdownCards(a)}
       <div style="font-size:12px;font-weight:700;color:var(--gold-d);margin:14px 0 6px">✏️ แก้ไข/กรอกคะแนน (ทุกช่อง)</div>
@@ -1534,10 +1621,9 @@ function approveEmpDirect(empId){
   readFullEditFields(a, 'emp-'+empId);
   a.status = 'approved';
   a.updated = nowStr();
-  const result = evalResult(a);
-  a.total = result.total;
-  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'HR กรอก+อนุมัติคะแนนโดยตรง (ป้องกันให้คะแนนตัวเอง) '+empId+(result.pass?' — ผลสรุป: ผ่าน':' — ผลสรุป: ไม่ผ่าน'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':'')), ip:'127.0.0.1'});
-  toast(result.pass? 'บันทึกและอนุมัติเรียบร้อย ✓ ผ่านเกณฑ์' : 'บันทึกและอนุมัติเรียบร้อย — ผลสรุป: ไม่ผ่านเกณฑ์'+(result.mandatoryFails.length?' (ตกเกณฑ์ภาคบังคับ)':''));
+  a.total = calcScore(a);
+  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'HR กรอก+อนุมัติคะแนนโดยตรง (ป้องกันให้คะแนนตัวเอง) '+empId, ip:'127.0.0.1'});
+  toast('บันทึกและอนุมัติเรียบร้อย ✓');
   toggleEmpEdit(empId); toggleEmpEdit(empId); // refresh
 }
 
