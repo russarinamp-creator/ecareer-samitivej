@@ -3,15 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E-Career Path — Samitivej Pharmacy</title>
+<title>EC Samitivej — E-Career Path &amp; IDP System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ivory:#FAF7F0; --ivory-2:#F5F0E4; --green:#1B5E3B; --green-l:#E8F3ED;
-  --green-d:#123F27; --gold:#C9A84C; --gold-d:#A07A28; --gold-l:#FBF5E6;
-  --border:#E8DFC8; --text:#3D2D0A; --text-2:#6B5B3A; --red:#C0392B; --red-l:#FEEBEB;
+  --ivory:#F7F9F8; --ivory-2:#EFF4F1; --green:#1B5E3B; --green-l:#E8F3ED;
+  --green-d:#123F27; --green-soft:#2F7D53; --gold:#C9A84C; --gold-d:#A07A28; --gold-l:#FBF5E6;
+  --border:#DCE6E0; --text:#1F2D26; --text-2:#5B6B62;
+  --red:#C0392B; --red-l:#FDECEA; --crimson:#B8283E; --crimson-l:#FCE9EC; --crimson-d:#7E1B2A;
+  --warn:#B98900; --warn-l:#FFF6DD;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,'Sarabun',sans-serif;background:var(--ivory);color:var(--text);min-height:100vh}
+body{font-family:'Prompt','Sarabun',-apple-system,sans-serif;background:var(--ivory);color:var(--text);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 input,select{font-family:inherit}
 
@@ -56,7 +60,61 @@ input,select{font-family:inherit}
 .topbar h1{font-size:17px;font-weight:700;color:var(--green-d)}
 .topbar-role-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--role-color, var(--gold-d));background:var(--role-color-l, var(--gold-l));padding:3px 11px;border-radius:9px;margin-left:10px;vertical-align:middle}
 .mode-badge{font-size:10.5px;background:var(--gold-l);color:var(--gold-d);padding:3px 10px;border-radius:9px;font-weight:600;border:1px solid var(--gold)}
-.content{padding:24px 28px;max-width:1000px}
+.content{padding:24px 28px;max-width:1120px}
+.content.fade-in{animation:fadein .28s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== SAMITIVEJ TOP BRAND BAR ===== */
+.brand-tabs{display:flex;gap:4px;margin-left:18px}
+.brand-tabs button{padding:8px 16px;background:none;border:none;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-2);transition:all .18s}
+.brand-tabs button:hover{background:var(--green-l);color:var(--green-d)}
+.brand-tabs button.active{background:var(--green);color:#fff}
+
+/* ===== HARD-GATE STATUS BANNER ===== */
+.status-banner{border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start;border:1.5px solid transparent}
+.status-banner.ok{background:var(--green-l);border-color:#cde3d5}
+.status-banner.fail{background:linear-gradient(135deg,var(--crimson-l),#FBDCE1);border-color:var(--crimson);box-shadow:0 4px 18px rgba(184,40,62,.16)}
+.status-banner-icon{font-size:26px;line-height:1;flex-shrink:0}
+.status-banner-title{font-size:15px;font-weight:800}
+.status-banner.ok .status-banner-title{color:var(--green-d)}
+.status-banner.fail .status-banner-title{color:var(--crimson-d)}
+.status-banner-sub{font-size:12px;margin-top:4px;line-height:1.6}
+.status-banner.ok .status-banner-sub{color:var(--text-2)}
+.status-banner.fail .status-banner-sub{color:var(--crimson-d)}
+.status-banner-reasons{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.status-banner-reason{font-size:11.5px;font-weight:600;color:var(--crimson-d);background:#fff;border:1px solid #f3c3cc;border-radius:8px;padding:6px 10px;display:flex;gap:6px;align-items:center}
+
+/* ===== 2-COLUMN DASHBOARD (Career Path / IDP) ===== */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.cp-step{display:flex;gap:12px;padding:12px 0;position:relative}
+.cp-step:not(:last-child)::before{content:'';position:absolute;left:15px;top:34px;bottom:-4px;width:2px;background:var(--border)}
+.cp-dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;background:var(--ivory-2);color:var(--text-2);border:2px solid var(--border);z-index:1}
+.cp-step.done .cp-dot{background:var(--green);border-color:var(--green);color:#fff}
+.cp-step.current .cp-dot{background:#fff;border-color:var(--green);color:var(--green-d);box-shadow:0 0 0 4px var(--green-l)}
+.cp-body{flex:1;padding-top:4px}
+.cp-name{font-size:13px;font-weight:700;color:var(--text)}
+.cp-step.current .cp-name{color:var(--green-d)}
+.cp-meta{font-size:11px;color:var(--text-2);margin-top:2px}
+.cp-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:5px}
+.cp-tag.now{background:var(--green);color:#fff}
+.cp-tag.done{background:var(--green-l);color:var(--green-d)}
+.cp-tag.next{background:var(--gold-l);color:var(--gold-d)}
+.idp-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.idp-row:last-child{border-bottom:none}
+.idp-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.idp-name small{display:block;font-weight:400;color:var(--text-2);font-size:10.5px;margin-top:2px}
+.idp-hours-ring{width:64px;height:64px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
+.idp-hours-hole{position:absolute;inset:8px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.idp-hours-hole b{font-size:13px;color:var(--text)}
+.idp-hours-hole span{font-size:7.5px;color:var(--text-2)}
+
+/* ===== UNIFIED CRITERION SUMMARY BADGE (green/yellow/red) ===== */
+.crit-summary-badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;padding:5px 13px;border-radius:9px}
+.crit-summary-badge.st-pass{background:var(--green-l);color:var(--green-d)}
+.crit-summary-badge.st-warn{background:var(--warn-l);color:var(--warn)}
+.crit-summary-badge.st-fail{background:var(--crimson-l);color:var(--crimson-d)}
+.row-hardgate-fail{background:var(--crimson-l);border-radius:10px;margin:0 -10px;padding:14px 10px !important}
+.row-hardgate-fail .item-name{color:var(--crimson-d)}
 
 /* ===== CARDS / COMPONENTS ===== */
 .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(61,45,10,.05)}
@@ -76,7 +134,8 @@ tr:hover td{background:var(--ivory-2)}
 
 .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px}
 .badge-pass{background:var(--green-l);color:var(--green)}
-.badge-fail{background:var(--red-l);color:var(--red)}
+.badge-fail{background:var(--crimson-l);color:var(--crimson-d)}
+.badge-warn{background:var(--warn-l);color:var(--warn)}
 .badge-draft{background:#EEF1F5;color:#5B6B82}
 .badge-submitted{background:var(--gold-l);color:var(--gold-d)}
 .badge-approved{background:var(--green-l);color:var(--green)}
@@ -129,15 +188,13 @@ tr:hover td{background:var(--ivory-2)}
 .item-gap b{color:var(--text)}
 
 /* Score Panel — ฝั่งขวา แสดงผลลัพธ์ชัดเจนแบบมืออาชีพ */
-.item-right{flex-shrink:0;width:96px;text-align:center;background:var(--ivory-2);border-radius:12px;padding:10px 8px;border:1px solid var(--border)}
+.item-right{flex-shrink:0;width:100px;text-align:center;background:var(--ivory-2);border-radius:12px;padding:12px 8px;border:1px solid var(--border)}
 .item-right.r-full{background:var(--green-l);border-color:#cde3d5}
-.item-right.r-fail{background:var(--red-l);border-color:#f3c9c3}
+.item-right.r-fail{background:var(--crimson-l);border-color:#f3c3cc}
 .item-right.r-pending{background:var(--ivory-2);border-color:var(--border)}
-.item-score-big{font-size:21px;font-weight:800;line-height:1.1}
-.item-score-max{font-size:10px;color:var(--text-2);margin-top:2px;font-weight:600}
-.item-mini-bar{height:5px;background:#fff;border-radius:3px;overflow:hidden;margin-top:7px}
-.item-mini-fill{height:100%;border-radius:3px;transition:width .3s}
-.item-status-icon{font-size:15px;margin-top:5px}
+.item-score-big{font-size:20px;font-weight:800;line-height:1.1}
+.item-score-max{font-size:10px;color:var(--text-2);margin-top:3px;font-weight:600}
+.item-status-icon{font-size:17px;margin-top:6px}
 
 .level-ref{width:100%;border-collapse:collapse;font-size:10.5px;margin:6px 0 2px;background:var(--ivory-2);border-radius:8px;overflow:hidden}
 .level-ref th{padding:5px 7px;background:var(--green-l);color:var(--green-d);font-weight:700;text-align:center}
@@ -234,19 +291,24 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">EC</div>
-    <div class="login-title">E-Career Path</div>
-    <div class="login-sub">ระบบประเมินสมรรถนะเภสัชกร · Samitivej</div>
+    <div class="login-title">EC Samitivej</div>
+    <div class="login-sub">E-Career Path &amp; IDP System · เภสัชกรรมสมิติเวช</div>
     <div class="field">
-      <label>รหัสพนักงาน</label>
-      <input type="text" id="login-emp-input" placeholder="กรอกรหัสพนักงานของคุณ" autocomplete="off">
+      <label>รหัสพนักงาน (Employee ID)</label>
+      <select id="login-emp">
+        <option value="">— เลือกรหัสพนักงานเพื่อทดสอบ Demo —</option>
+      </select>
     </div>
     <div class="field">
       <label>รหัสผ่าน</label>
       <input type="password" id="login-pw" placeholder="กรอกอะไรก็ได้ (โหมด Demo)">
     </div>
     <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
-    <div id="login-error" style="display:none;color:var(--red);font-size:12px;margin-top:8px;text-align:center"></div>
-    <div class="demo-note"><b>โหมด Demo — รหัสทดสอบ:</b> HR001 (ฝ่าย HR) · MGR001 วรินรัตน์ (หัวหน้า OPD) · MGR002 อภิรักษ์ (หัวหน้า IPD) · หรือรหัสพนักงาน 6 หลักจากไฟล์จริง — รหัสผ่านใส่อะไรก็ได้</div>
+    <div class="demo-note"><b>โหมด Demo:</b> ข้อมูลทั้งหมดเป็น Mock Data เก็บในเครื่องชั่วคราว เข้าสู่ระบบด้วยรหัสพนักงานด้านบน รหัสผ่านใส่อะไรก็ได้ (ยังไม่ผูก Authentication จริง จนกว่าจะเก็บ Feedback จากหัวหน้างานครบ)<br><br>
+    <b>บัญชีตัวอย่างแนะนำ:</b><br>
+    · <b>PC001</b> — ภญ. สมหญิง รักดี (เภสัชกรปฏิบัติการ) — ชั่วโมงอบรมไม่ครบ 60 ชม. เพื่อทดสอบ Hard Gate ตกเกณฑ์<br>
+    · <b>PC002</b> — ภญ. พรทิพย์ สุขใจ (เภสัชกรชำนาญการ) — ผ่านเกณฑ์ทุกข้อ<br>
+    · <b>MGR006</b> — ดร.ภญ. มณีรัตน์ (หัวหน้างาน) — ดูรายงาน/ประวัติผลของทีม</div>
   </div>
 </div>
 
@@ -256,7 +318,7 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
   <div class="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-icon">EC</div>
-      <div class="sb-logo-text">E-Career Path<span>Samitivej Pharmacy</span></div>
+      <div class="sb-logo-text">EC Samitivej<span>E-Career Path &amp; IDP</span></div>
     </div>
     <div class="sb-user">
       <div class="sb-user-name" id="sb-name">—</div>
@@ -268,7 +330,10 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
   </div>
   <div class="main">
     <div class="topbar">
-      <h1><span id="page-title">ภาพรวม</span><span class="topbar-role-tag" id="topbar-role-tag"></span></h1>
+      <div style="display:flex;align-items:center">
+        <h1><span id="page-title">ภาพรวม</span><span class="topbar-role-tag" id="topbar-role-tag"></span></h1>
+        <div class="brand-tabs" id="topbar-tabs"></div>
+      </div>
       <span class="mode-badge">🧪 Demo Mode — Mock Data</span>
     </div>
     <div class="content" id="content"></div>
@@ -311,107 +376,20 @@ const CONFIG = {
   }
 };
 
-const DEPARTMENTS = ['เภสัชกรรม OPD','เภสัชกรรม IPD','เภสัชกรรมฉุกเฉิน (ER)','ผู้ช่วยเภสัชกรรม','Thai Insurance (UR Officer)'];
+const DEPARTMENTS = ['เภสัชกรรม OPD','เภสัชกรรม IPD','เภสัชกรรมฉุกเฉิน (ER)','ผู้ช่วยเภสัชกรรม','Thai Insurance (UR Officer)','เภสัชกรรมคลินิก (Career Track Demo)'];
 
 const EMPLOYEES = [
-  // เภสัชกรรม OPD+IPD — พนักงานจริงจากไฟล์ Test_Med.xlsx (97 คน ใต้ วรินรัตน์ ฤทธิ์รอด และ อภิรักษ์ ปัญญาดี)
-  {emp_id:'610194', name:'นันทิกานต์ ฤทธิ์บำรุง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'598237', name:'จิราวรรณ คันโซ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'598569', name:'นอรฮูดา อับดุลเล๊าะ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110124', name:'บูรพา คำศิลา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110129', name:'พรรณาภรณ์ วงค์แสนสี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110133', name:'นฤมล มหาโยธี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110135', name:'สุนิสา เย็นวอน', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110136', name:'ศิริมาส นุชนารถ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110138', name:'บุษนภัส รอดปืนใหญ่', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'110140', name:'สุนันทา ไขไพรวัน', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'110113', name:'สุจินต์ บาริศรี', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'611907', name:'ณัฐพร รุ่งภูวภัทร', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'110110', name:'กมลทิพย์ หาทรัพย์', dept:'เภสัชกรรม IPD', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'614181', name:'อะยูมิ อินูอิ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'607111', name:'ปฐวรรธณ์ บุญกองรัตน์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'623765', name:'กฤษกร ศิริรังสรรค์กุล', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'611053', name:'อภิสิทธิ์ กัณทวงษ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'611058', name:'ชุตินันท์ เลิศประสิทธิพันธ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'615942', name:'อรปรียา วิชิตวาสุเทพ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'609290', name:'อริสรา นามบิดา', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'611813', name:'ชนิสรา นาคา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'600611', name:'สริตา ธนศรีวนิชชัย', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'596788', name:'สิรินรัชช์ สิงห์โต', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'560460', name:'คณิศร นันทพัฒน์พิทยา', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'570591', name:'กานต์ธิดา จันทรปัตย์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'585840', name:'ประภาพรรณ สมใส', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'610240', name:'ธนวัฒน์ ปิยะพรมดี', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'609145', name:'ชลาทิพย์ มั่นใจ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'610241', name:'ซาฮีราฟ นิแม', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'609206', name:'นงกนก วงศ์เหรียญทอง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'609223', name:'ธนัญญา ลิ่มชูเชื้อ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'609228', name:'นภัสวรรณ ภู่วงษ์งาม', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'534694', name:'ณัฐพงษ์ เลิศทวีสินสกุล', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'578621', name:'ชุติพงศ์ อึงคนึงเกียรติ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'578622', name:'วุฒิชัย ประยงค์สุข', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'559376', name:'อรณิชา เครื่องทิพย์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'545298', name:'พิพัฒน์พงษ์ ขจรจันทร์', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'559391', name:'นิศารัตน์ โฮโซดะ', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'559393', name:'กฤษฎิ์ณิชา อภิรมย์รักษ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'559397', name:'ธัญพิชชา พัวประดิษฐ์', dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'546104', name:'จักรกฤษณ์ วงษ์ทอง', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'541944', name:'ศุฌิมา พรบรรเจิด', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'541979', name:'กาญจนาภา อาริยวิทยา', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'504674', name:'เพลินจิต มุ่งพร', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'505756', name:'ชลธิชา พุทธา', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'579788', name:'ณัชชา เดียวอิศเรศ', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'507336', name:'ปรม ศรีเจริญสุข', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'543385', name:'ศิริประภา ทาเครือ', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'593062', name:'ธิรารัตน์ นาถมทอง', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'506505', name:'ธารินี ทับจันทร์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'113695', name:'มาลินี นาคนาวา', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'510957', name:'ปิยะกาญจน์ สรรพนา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'112274', name:'ศิริพร พรหมวงศ์', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'112694', name:'สุมาลี ดันบาร์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'113250', name:'ณัชนิตา ถูระวรณ์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'580977', name:'ดวงกมล อุทัยวัฒนา', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'534512', name:'จิรัฐติ สุขปรีดี', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'534544', name:'เปรมวดี หาญวารี', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'112583', name:'ฉัตติญา ศรีสงวนสัตย์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'113332', name:'ระเบียบ มอซอ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'542651', name:'ปวรา อินมะเหงี่ยม', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'580984', name:'จารุภา ปรีชาพันธ์', dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'534102', name:'สิริรัฐ สิริชูสินวงศ์', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'527417', name:'วิชญาดา ศรีกุล', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'576528', name:'ณัฐพล ท้วมนาค', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'592929', name:'ทิพรัตน์ พึ่งน้ำ', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'567506', name:'กฤตณัฑ ลาภสมบุญกมล', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'593949', name:'พรรณิภา ปินะเต', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'549714', name:'อาภาศิริ วิลัย', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'526259', name:'สุพิชญา กันภัย', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'550578', name:'ธิติ โตวัฒนะ', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'548217', name:'อัษฎาพร แคนธานี', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'591207', name:'วิยดา เทียมลม', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'556234', name:'อาทิตญา สอนดา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'592911', name:'ฉัตรสุดา ธรรมะ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'592919', name:'ปานทิพย์ นามโพธิ์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'555619', name:'นิสาชล ยอดไม้', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'551370', name:'ภัทราพร เพลียพลป้อง', dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'110104', name:'วิภาดา แก้วปลั่ง', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'523182', name:'ภารดี ใจภักดี', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'504375', name:'วนัสนันท์ ศรีสุข', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'559406', name:'ลลิตา ปันมา', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'114233', name:'วิสสพร ควรฤาชัย', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'513298', name:'พรธัญรักษ์ สุขสอาด', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'513823', name:'กนกพร เสนางคนิกร', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'515849', name:'วณิชยา แซ่ลิ้ม', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'518289', name:'จิราภรณ์ คำลอย', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'511095', name:'อรณิช พูลภิบาล', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'517954', name:'อุราพร พวงวอน', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'113764', name:'ระพีพรรณ แสงวัฒนะ', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'113986', name:'นิคม อุตมงค์', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'576612', name:'นาดีญา อาแซ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'512470', name:'ณัฐศิรินทร์ ยวงสุวรรณ', dept:'เภสัชกรรม IPD', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'512806', name:'ชนิศา ยงยศรุ่งเรือง', dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'113717', name:'เกศรา ชูคำสัตย์', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'530150', name:'จุฑารัตน์ จิตตกลาง', dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'580697', name:'สุพรรษา ศรีภิรมย์', dept:'เภสัชกรรม OPD', group:'assistant', level:1, role:'viewer'},
+  // เภสัชกรรม OPD
+  {emp_id:'EMP001', name:'สมชาย ใจดี',      dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'EMP003', name:'ณัฐพล วงศ์ดี',    dept:'เภสัชกรรม OPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'EMP005', name:'ปิยะดา ศรีสุข',   dept:'เภสัชกรรม OPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'EMP006', name:'ธนกร มีสุข',      dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'viewer'},
+  {emp_id:'EMP007', name:'อรอุมา แก้วใส',   dept:'เภสัชกรรม OPD', group:'med_support', level:2, role:'viewer'},
+  // เภสัชกรรม IPD
+  {emp_id:'EMP002', name:'นภา รักษ์สุข',    dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'EMP008', name:'กิตติศักดิ์ บุญมี',dept:'เภสัชกรรม IPD', group:'med_support', level:3, role:'viewer'},
+  {emp_id:'EMP009', name:'สุนิสา ทองแท้',   dept:'เภสัชกรรม IPD', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'EMP010', name:'ประวิทย์ หาญกล้า',dept:'เภสัชกรรม IPD', group:'med_support', level:1, role:'viewer'},
   // เภสัชกรรมฉุกเฉิน (ER)
   {emp_id:'EMP011', name:'มณีรัตน์ ใจงาม',  dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:2, role:'viewer'},
   {emp_id:'EMP012', name:'อนุชา ศรีทอง',    dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:3, role:'viewer'},
@@ -421,108 +399,12 @@ const EMPLOYEES = [
   {emp_id:'EMP014', name:'สมหญิง ตั้งใจดี', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:2, role:'viewer'},
   {emp_id:'EMP015', name:'บุญเลิศ แสนดี',   dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:3, role:'viewer'},
   {emp_id:'EMP016', name:'พรทิพย์ วงศ์สุข', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:1, role:'viewer'},
-  // Imaging — พนักงานจริงจากไฟล์ Test_Med.xlsx (63 คน ใต้ เสริมศักดิ์ แสงเพ็ชร / ฤทธิไกร วงศ์ปัญญา)
-  {emp_id:'614512', name:'ธัญญลักษณ์ เตชะสุริยาวงศ์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'599576', name:'เมธาวดี หาริตะวัน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'580799', name:'พัชรินทร์ อาษาธง', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'580858', name:'ปทุมพร อ่อนดี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'611884', name:'กีรฏิยา ชัยชนะ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'611121', name:'อัฐภิญญาพร ระมั่ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'623704', name:'เอกณัฐ ทนงูเหลือม', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'624377', name:'ศริญญา เย็นประเสริฐ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'110151', name:'ปิ่นกันยา นาสวน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'621162', name:'กำพล หมั่นอารี', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'607205', name:'นพมาศ อุดนัน', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'567344', name:'ศิริขวัญ ฝั่งซ้าย', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'601712', name:'ณัฐธยาน์ บุญมี', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'541974', name:'ชนิตา เจือจาน', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'600574', name:'รัฐนันท์ เจียรประเสริฐพร', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'534456', name:'สุภัสรา พึ่งตาแสง', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'545990', name:'วิภารัตน์ โกสิลารัตน์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'546404', name:'วัลลภา เหล่าภักดี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'600624', name:'ทิราภรณ์ แนวอินทร์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'610247', name:'อาณยา แซ่เอีย', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'592545', name:'กมลลักษณ์ พานวิจิตรา', dept:'Imaging - ฤทธิไกร', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'625218', name:'อนันตศักดิ์ ฮุงหวน', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'533400', name:'กฤชพล ปัญบุญมี', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'533420', name:'ปรีดาวรรณ ทิพย์รัตน์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'578635', name:'สุนิศา นาคราช', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'539571', name:'รจเรข ทองยศ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'532786', name:'ยุภา ประกอบแก้ว', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'536175', name:'อมรรัตน์ แยบกระโทก', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'112425', name:'ทชภณ ศรีธรรมมา', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'586056', name:'ธิดารัตน์ บุตตะ', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'112424', name:'อภิญญา รักษาพันธ์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'581875', name:'จุฑามาศ บุญเกษม', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'547563', name:'ชไมพร โลราช', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'580698', name:'ชลณัชชา โคตรพัฒน์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'515996', name:'จิราพร พะวงษ์', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'518171', name:'ทิชากร คงแก้ว', dept:'Imaging - ฤทธิไกร', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'575215', name:'สุภัค โกสีย์เจริญ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'567340', name:'ณิชาภัทร แซ่ปึ้ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'567342', name:'ปารัชญ์ ชีพอรุณ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'570502', name:'อภิษฎา เพ็ชรเจริญ', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'546734', name:'กุลภัสสร์ คำตีด', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'583821', name:'นุชนาฎ พิมพ์วิเศษ', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'529739', name:'เบญจมาภรณ์ ผิวหล่อ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'113058', name:'วิภาภรณ์ เหวันต์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'519821', name:'กิ่งกาญจน์ อ่อนจันทร์อม', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'519822', name:'ศรัญญา บุตรหนัน', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'110147', name:'ภิสันต์ ศาสตร์เฟื่องฟู', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
-  {emp_id:'571742', name:'อชิรญาณ์ ร่วมจิตร', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'571747', name:'ธัชพล ศิริทรัพย์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'560354', name:'ภูริช หาญเทวี', dept:'Imaging - ฤทธิไกร', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'550655', name:'ณัฐสุดา แซมมงคล', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'550727', name:'กฤติยา กะรัตน์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'510298', name:'อังศุมาจิน ทิพย์จันทร์', dept:'Imaging - ฤทธิไกร', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'110153', name:'ธีรภัทร แก้วหาญ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
-  {emp_id:'110160', name:'ปรียาภรณ์ พรานบุญ', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
-  {emp_id:'112173', name:'สุจิตรา เหล็กคม', dept:'Imaging - ฤทธิไกร', group:'assistant', level:3, role:'viewer'},
-  {emp_id:'550725', name:'เบญจวรรณ แซ่ตั้ง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'viewer'},
-  {emp_id:'503288', name:'บุปผา ทองย่อย', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:2, role:'viewer'},
-  {emp_id:'515946', name:'ชินพันธ์ กรฤทธิ์วรพัฒน์', dept:'Imaging - เสริมศักดิ์', group:'assistant', level:3, role:'viewer'},
-  {emp_id:'543489', name:'ณัฐธิดา เวียงลอ', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
-  {emp_id:'113515', name:'ภัศรินทร์ สะอาด', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
-  {emp_id:'530507', name:'อมรพรรณ เชิญรัมย์', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'viewer'},
-  {emp_id:'112799', name:'สุวัฒน์ชัย ส่งแสง', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'viewer'},
-  // Pathology + Physical Therapy — พนักงานจริง (28 คน ใต้ เมตตา จารุกิจจรูญ)
-  {emp_id:'603860', name:'วินัย เบ้าทอง', dept:'Pathology (เมตตา)', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'562552', name:'วริศรา อุ่นผูก', dept:'Pathology (เมตตา)', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'553420', name:'มณฑารพ ตื้อแก้ว', dept:'Pathology (เมตตา)', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'592264', name:'ณัชวรัตม์ จันทร์งาม', dept:'Physical Therapy (เมตตา)', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'591395', name:'รุ่งนภาพร ทองวิเศษ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:1, role:'viewer'},
-  {emp_id:'110170', name:'ดวงตรา วงค์แสง', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'560865', name:'วิชุดา ลาปีอี', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'569683', name:'รัตติญา บุญรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'533177', name:'ช่อทิพย์ แข็งขัน', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'112559', name:'ขวัญตา กาหลงรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'113706', name:'วรรณี ศรีธาตุ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'522118', name:'ขนิษฐา สมปิตะ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'529287', name:'สุคนธ์ทิพย์ ตลอดพงษ์', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'515986', name:'กิตติกร มหาวรรณ', dept:'Physical Therapy (เมตตา)', group:'assistant', level:2, role:'viewer'},
-  {emp_id:'623790', name:'ดวงสมร แก้วรุ่งเรือง', dept:'Physical Therapy (เมตตา)', group:'med_support', level:1, role:'viewer'},
-  {emp_id:'590135', name:'พรรณทิภา ประยูรรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'506788', name:'ชวลิต จงหอมขจร', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'505836', name:'กอบทอง เฉลิมชัย', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'505837', name:'ณัฐวุฒิ วัยเจริญ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'114118', name:'อุดมเดช พัฒนะจุฑา', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'111818', name:'พินิจ วิทยสุนทร', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'112651', name:'ปิยะดา บุญสิงห์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'113531', name:'พรพรรณ ประกายสันติสุข', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'111806', name:'สุชาดา ตั้งจิตเพียรพงศ์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'111268', name:'วันทนีย์ กมลเสถียรรัตน์', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'111794', name:'รัชดาภรณ์ พรมปัญญา', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'551597', name:'วัชริตา ฤกษ์วัฒนสิริกุล', dept:'Physical Therapy (เมตตา)', group:'med_support', level:3, role:'viewer'},
-  {emp_id:'112124', name:'ศิริลักษณ์ เจริญศิริ', dept:'Physical Therapy (เมตตา)', group:'med_support', level:4, role:'viewer'},
   // Manager / HR — 1 หัวหน้าต่อ 1 สายงาน (เห็นเฉพาะลูกทีมสายงานตัวเอง)
-  {emp_id:'MGR001', name:'วรินรัตน์ ฤทธิ์รอด', dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'MGR002', name:'อภิรักษ์ ปัญญาดี', dept:'เภสัชกรรม IPD', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'MGR001', name:'ภญ. สุพร แสงชัย', dept:'เภสัชกรรม OPD', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'MGR002', name:'ภญ. อรวรรณ ทองสุข', dept:'เภสัชกรรม IPD', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'MGR003', name:'ภก. ธีรพงศ์ ศรีวิไล', dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'MGR004', name:'คุณสมพร ใจซื่อ', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:3, role:'evaluator'},
   {emp_id:'MGR005', name:'ภญ. นันทวัน เจริญสุข', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'524389', name:'เสริมศักดิ์ แสงเพ็ชร', dept:'Imaging - เสริมศักดิ์', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'112354', name:'ฤทธิไกร วงศ์ปัญญา', dept:'Imaging - ฤทธิไกร', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'110167', name:'เมตตา จารุกิจจรูญ', dept:'Pathology (เมตตา)', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'HR001',  name:'ฝ่าย HR — คุณกัลยา', dept:'HR', group:null, level:null, role:'admin'},
   // Thai Insurance (UR Officer) — ข้อมูลจริงจากไฟล์ Test_Demo.xlsx
   {emp_id:'021037', name:'ประกายดาว อุดมธนโภคิน', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'viewer'},
@@ -533,16 +415,43 @@ const EMPLOYEES = [
   {emp_id:'592702', name:'ปาริชาติ สมศรี',          dept:'Thai Insurance (UR Officer)', group:'med_support', level:2, role:'viewer'},
   {emp_id:'595267', name:'พรประภา วงศ์ชนะ',        dept:'Thai Insurance (UR Officer)', group:'med_support', level:1, role:'viewer'},
   {emp_id:'578669', name:'จุฑามาศ สะตะ',            dept:'Thai Insurance (UR Officer)', group:'med_support', level:1, role:'viewer'},
+  // ==== บัญชีตัวอย่างสาธิต Hard Gate / Career Path & IDP (ตามที่ผู้บริหารระบุ) ====
+  {emp_id:'PC001', name:'ภญ. สมหญิง รักดี',   dept:'เภสัชกรรมคลินิก (Career Track Demo)', group:'med_support', level:1, role:'viewer'},
+  {emp_id:'PC002', name:'ภญ. พรทิพย์ สุขใจ',  dept:'เภสัชกรรมคลินิก (Career Track Demo)', group:'med_support', level:2, role:'viewer'},
+  {emp_id:'MGR006', name:'ดร.ภญ. มณีรัตน์ วิสุทธิ์เมธางกูร', dept:'เภสัชกรรมคลินิก (Career Track Demo)', group:'med_support', level:4, role:'evaluator'},
 ];
 
 // mutable in-memory "assessments" store for the demo session
 // (พนักงานบางคนตั้งใจไม่มี record เลย เพื่อจำลอง "ยังไม่เข้าทำประเมิน")
-// พนักงานจริง 97 คนใน OPD/IPD (ทีมวรินรัตน์/อภิรักษ์) ยังไม่มีผลประเมิน — รอหัวหน้ากรอกจริงตอน UAT
 let ASSESSMENTS = [
+  {session_id:'S1001', emp_id:'EMP001', level:2, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:470,
+   c2_func:90, c2_b5f:4.3, c3_team:80, c4_train:65, c5_lead:75,
+   total:0, updated:'25 มิ.ย. 2569'},
+  {session_id:'S1002', emp_id:'EMP002', level:1, group:'med_support', status:'submitted',
+   c1_annual:82, c1_unit:79, c1_eng_type:'toeic', c1_eng_val:410,
+   c2_func:78, c2_b5f:4.0, c3_team:60, c4_train:60, c5_lead:50,
+   total:0, updated:'24 มิ.ย. 2569'},
   {session_id:'S1003', emp_id:'EMP004', level:1, group:'assistant', status:'draft',
    c1_annual:null, c1_unit:null, c1_eng_type:null, c1_eng_val:null,
    c2_func:null, c2_b5f:null, c3_team:null, c4_train:null, c5_lead:null,
    total:0, updated:'—'},
+  {session_id:'S1004', emp_id:'EMP003', level:3, group:'med_support', status:'approved',
+   c1_annual:70, c1_unit:65, c1_eng_type:'toeic', c1_eng_val:460,
+   c2_func:72, c2_b5f:3.8, c3_team:55, c4_train:50, c5_lead:40,
+   total:0, updated:'23 มิ.ย. 2569'},
+  {session_id:'S1005', emp_id:'EMP006', level:4, group:'med_support', status:'approved',
+   c1_annual:92, c1_unit:90, c1_eng_type:'speaking', c1_eng_val:5,
+   c2_func:95, c2_b5f:4.5, c3_team:88, c4_train:80, c5_lead:90,
+   total:0, updated:'22 มิ.ย. 2569'},
+  {session_id:'S1006', emp_id:'EMP008', level:3, group:'med_support', status:'submitted',
+   c1_annual:85, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:455,
+   c2_func:80, c2_b5f:4.1, c3_team:70, c4_train:60, c5_lead:65,
+   total:0, updated:'24 มิ.ย. 2569'},
+  {session_id:'S1007', emp_id:'EMP009', level:2, group:'med_support', status:'approved',
+   c1_annual:65, c1_unit:60, c1_eng_type:'toeic', c1_eng_val:440,
+   c2_func:60, c2_b5f:3.6, c3_team:50, c4_train:45, c5_lead:35,
+   total:0, updated:'21 มิ.ย. 2569'},
   {session_id:'S1008', emp_id:'EMP011', level:2, group:'med_support', status:'approved',
    c1_annual:80, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:450,
    c2_func:82, c2_b5f:4.15, c3_team:75, c4_train:60, c5_lead:60,
@@ -592,9 +501,24 @@ ASSESSMENTS.push(
    c3_team:100, c4_train:83.33, c5_lead:100, updated:'พ.ค. 2569'}
 );
 
+// ==== บัญชีสาธิต Hard Gate Failing & Career Path/IDP ====
+// c4_train_hours = ชั่วโมงอบรมจริง (เกณฑ์ภาคบังคับ >= 60 ชม./ปี) ใช้ตรวจ Hard Gate โดยเฉพาะ
+// PC001: ผ่านเกณฑ์ Annual Test แต่ "ตก" Unit Test (79% < 80%) และชั่วโมงอบรมไม่ครบ (40/60 ชม.)
+//        แม้คะแนนเฉลี่ยรวมจะคำนวณได้ >=80 ก็ตาม ระบบต้องแจ้ง "ไม่ผ่านเกณฑ์" เพราะติด Hard Gate ภาคบังคับ
+ASSESSMENTS.push(
+  {session_id:'S-PC001', emp_id:'PC001', level:1, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:79, c1_eng_type:'toeic', c1_eng_val:410,
+   c2_func:90, c2_b5f:4.2, c3_team:85, c4_train:66.7, c4_train_hours:40, c5_lead:80,
+   total:0, updated:'28 ส.ค. 2569'},
+  {session_id:'S-PC002', emp_id:'PC002', level:2, group:'med_support', status:'approved',
+   c1_annual:92, c1_unit:88, c1_eng_type:'toeic', c1_eng_val:465,
+   c2_func:93, c2_b5f:4.4, c3_team:90, c4_train:100, c4_train_hours:65, c5_lead:88,
+   total:0, updated:'28 ส.ค. 2569'}
+);
+
 let AUDIT_LOG = [
   {t:'25/06 09:14', who:'EMP001', action:'Login สำเร็จ', ip:'192.168.1.45'},
-  {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001) โดย วรินรัตน์ ฤทธิ์รอด', ip:'192.168.1.10'},
+  {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001)', ip:'192.168.1.10'},
   {t:'25/06 09:31', who:'HR001',  action:'Approve ผลประเมิน S1001', ip:'10.0.5.2'},
   {t:'24/06 14:02', who:'EMP002', action:'Login ล้มเหลว (รหัสผ่านผิด)', ip:'203.150.x.x'},
   {t:'24/06 14:03', who:'EMP002', action:'Login สำเร็จ', ip:'203.150.x.x'},
@@ -664,19 +588,19 @@ function buildLevelRef(type, group, curLevel){
   const levels = cfg.levels;
   const th = levels.map(l=>`<th>${l===curLevel?'▶ ':''}L${l}</th>`).join('');
   let row;
-  if(type==='c1_annual') row = levels.map(l=>`<td>${cfg.weights.c1_annual[l-1]} pts</td>`).join('');
-  else if(type==='c1_unit') row = levels.map(l=>`<td>${cfg.weights.c1_unit[l-1]} pts</td>`).join('');
-  else if(type==='c1_eng') row = levels.map(l=>`<td>TOEIC≥${cfg.english[l].toeic}<br>(${cfg.weights.c1_eng[l-1]} pts)</td>`).join('');
-  else if(type==='c2_func') row = levels.map(l=>`<td>${cfg.weights.c2_func[l-1]} pts</td>`).join('');
-  else if(type==='c2_b5f') row = levels.map(l=>`<td>≥${B5F_MIN}<br>(${cfg.weights.c2_b5f[l-1]} pts)</td>`).join('');
-  else if(type==='c4_train') row = levels.map(l=>`<td>${cfg.weights.c4_train[l-1]} pts</td>`).join('');
+  if(type==='c1_annual') row = levels.map(l=>`<td>${cfg.weights.c1_annual[l-1]} คะแนน</td>`).join('');
+  else if(type==='c1_unit') row = levels.map(l=>`<td>${cfg.weights.c1_unit[l-1]} คะแนน</td>`).join('');
+  else if(type==='c1_eng') row = levels.map(l=>`<td>TOEIC≥${cfg.english[l].toeic}<br>(${cfg.weights.c1_eng[l-1]} คะแนน)</td>`).join('');
+  else if(type==='c2_func') row = levels.map(l=>`<td>${cfg.weights.c2_func[l-1]} คะแนน</td>`).join('');
+  else if(type==='c2_b5f') row = levels.map(l=>`<td>≥${B5F_MIN}<br>(${cfg.weights.c2_b5f[l-1]} คะแนน)</td>`).join('');
+  else if(type==='c4_train') row = levels.map(l=>`<td>${cfg.weights.c4_train[l-1]} คะแนน</td>`).join('');
   return `<table class="level-ref"><tr><th>เกณฑ์ตาม Level</th>${th}</tr><tr><td>น้ำหนัก/เกณฑ์</td>${row}</tr></table>`;
 }
 function buildSubLevelRef(critKey, group, curLevel){
   const cfg = SUB_CONFIG[group][critKey];
   const levels = Object.keys(cfg).map(Number).sort((a,b)=>a-b);
   return `<div class="level-ref-list">` + levels.map(l=>{
-    const items = cfg[l].map(s=>`${s.name} (เต็ม ${s.max} ${s.unit} = ${s.weight} pts)`).join(' · ');
+    const items = cfg[l].map(s=>`${s.name} (เต็ม ${s.max} ${s.unit} = ${s.weight} คะแนน)`).join(' · ');
     return `<div class="level-ref-row${l===curLevel?' cur':''}"><b>Level ${l}${l===curLevel?' (Level ของคุณ)':''}:</b> ${items}</div>`;
   }).join('') + `</div>`;
 }
@@ -694,11 +618,11 @@ function scoreBreakdown(a){
     const v=a.c1_annual, max=w.c1_annual[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
     const flagPass = v!=null? v>=80 : null;
-    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ผ่าน = 80%',
+    rows.push({crit:'C1', name:'Annual Test', who:'HR', standard:'เกณฑ์ภาคบังคับ = 80%', mandatory:true,
       desc:'สอบความรู้เภสัชกรรมประจำปี · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
-      gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80% (ภาคบังคับ)'),
+      gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
       ref: buildLevelRef('c1_annual', a.group, a.level)});
   }
   // ---- C1-2 Unit Competency ----
@@ -706,11 +630,11 @@ function scoreBreakdown(a){
     const v=a.c1_unit, max=w.c1_unit[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
     const flagPass = v!=null? v>=80 : null;
-    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ผ่าน = 80%',
+    rows.push({crit:'C1', name:'Unit Competency', who:'หัวหน้า', standard:'เกณฑ์ภาคบังคับ = 80%', mandatory:true,
       desc:'แบบประเมิน Unit Competency Checklist · คะแนนให้ตามสัดส่วนจริงที่ทำได้',
       achieved: v!=null? v+'%':'—', max, earned, flagPass,
-      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80%'),
-      gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
+      flagLabel: flagPass==null?null:(flagPass?'ผ่านมาตรฐาน ≥80%':'ต่ำกว่ามาตรฐาน ≥80% (ภาคบังคับ)'),
+      gap: (v!=null && v<100)? `ทำคะแนนเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
       ref: buildLevelRef('c1_unit', a.group, a.level)});
   }
   // ---- C1-3 English ----
@@ -725,7 +649,7 @@ function scoreBreakdown(a){
       desc:`เลือกวัดได้ 2 แบบ: คะแนน TOEIC หรือระดับ Speaking Test · ต่ำกว่าเกณฑ์ยังได้คะแนนตามสัดส่วน`,
       achieved: v!=null? (isSpk?'Speaking Level ':'TOEIC ')+v : '—', max, earned, flagPass,
       flagLabel: flagPass==null?null:(flagPass?'ถึงเกณฑ์ '+engStdLabel:'ยังไม่ถึงเกณฑ์ '+engStdLabel),
-      gap: (v!=null && v<engStd)? `ต้องการอีก ${Math.round((engStd-v)*10)/10} ${isSpk?'Level':'คะแนน TOEIC'} เพื่อให้ได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
+      gap: (v!=null && v<engStd)? `ต้องการอีก ${Math.round((engStd-v)*10)/10} ${isSpk?'Level':'คะแนน TOEIC'} เพื่อให้ได้คะแนนเต็ม ${max} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
       ref: buildLevelRef('c1_eng', a.group, a.level)});
   }
   // ---- C2-1 Function Role ----
@@ -735,7 +659,7 @@ function scoreBreakdown(a){
     rows.push({crit:'C2', name:'Function Role', who:'หัวหน้า', standard:'ไม่มีเกณฑ์ตัดผ่าน (คิดตามสัดส่วน %)',
       desc:'ผลประเมินการปฏิบัติงานตามหน้าที่ (Function Role) โดยหัวหน้างาน · ให้คะแนนตามสัดส่วน % ที่ทำได้',
       achieved: v!=null? v+'%':'—', max, earned, flagPass:null, flagLabel:null,
-      gap: (v!=null && v<100)? `ทำผลงานเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
+      gap: (v!=null && v<100)? `ทำผลงานเพิ่มอีก ${Math.round((100-v)*10)/10}% จะได้คะแนนเต็ม ${max} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
       ref: buildLevelRef('c2_func', a.group, a.level)});
   }
   // ---- C2-2 B5F ----
@@ -747,7 +671,7 @@ function scoreBreakdown(a){
       desc:`ผลสำรวจ 360° องศาภายในองค์กร (มติผู้บริหาร) · ถ้าต่ำกว่าเกณฑ์จะไม่ได้คะแนนในหัวข้อนี้เลย (ไม่ใช่คะแนนตามสัดส่วน)`,
       achieved: v!=null? v:'—', max, earned, flagPass,
       flagLabel: flagPass==null?null:(flagPass?'ผ่านเกณฑ์ ≥'+B5F_MIN:'ไม่ผ่านเกณฑ์ ≥'+B5F_MIN),
-      gap: (v!=null && !flagPass)? `ต้องพัฒนา 360°B5F เพิ่มอีกอย่างน้อย ${Math.round((B5F_MIN-v)*100)/100} แต้ม เพื่อผ่านเกณฑ์และได้คะแนนเต็ม ${max} pts (ตอนนี้ได้ 0 pts เพราะไม่ถึงเกณฑ์ขั้นต่ำ)`:null,
+      gap: (v!=null && !flagPass)? `ต้องพัฒนา 360°B5F เพิ่มอีกอย่างน้อย ${Math.round((B5F_MIN-v)*100)/100} แต้ม เพื่อผ่านเกณฑ์และได้คะแนนเต็ม ${max} คะแนน (ตอนนี้ได้ 0 คะแนน เพราะไม่ถึงเกณฑ์ขั้นต่ำ)`:null,
       ref: buildLevelRef('c2_b5f', a.group, a.level)});
   }
 
@@ -761,7 +685,7 @@ function scoreBreakdown(a){
       rows.push({crit:'C3', name:s.name, who:'หัวหน้า', standard:`เกณฑ์เต็ม = ${s.max} ${s.unit}`,
         desc:`ให้คะแนนตามสัดส่วนที่ทำได้เทียบกับเกณฑ์เต็ม`,
         achieved: v!=null? v+' / '+s.max+' '+s.unit:'—', max:s.weight, earned, flagPass:null, flagLabel:null,
-        gap: (v!=null && v<s.max)? `ทำเพิ่มอีก ${Math.round((s.max-v)*10)/10} ${s.unit} จะได้คะแนนเต็ม ${s.weight} pts (ปัจจุบันได้ ${earned} pts)`:null,
+        gap: (v!=null && v<s.max)? `ทำเพิ่มอีก ${Math.round((s.max-v)*10)/10} ${s.unit} จะได้คะแนนเต็ม ${s.weight} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
         ref: i===c3subs.length-1? c3ref : null}); // แสดงตารางอ้างอิงแค่ท้ายกลุ่ม ไม่ต้องซ้ำทุกแถว
     });
   } else {
@@ -770,15 +694,18 @@ function scoreBreakdown(a){
       earned: a.c3_team!=null? Math.round(pct(a.c3_team)*w.c3_team[idx]*10)/10 : null, flagPass:null, flagLabel:null, gap:null, ref:c3ref});
   }
 
-  // ---- C4 Training Hours ----
+  // ---- C4 Training Hours (ภาคบังคับ >= 60 ชม./ปี) ----
   {
     const v=a.c4_train, max=w.c4_train[idx];
     const earned = v!=null? Math.round(pct(v)*max*10)/10 : null;
     const isHrs = typeof v==='number' && v>100;
-    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์เต็ม = 60 ชม./ปี',
+    const hoursVal = a.c4_train_hours!=null ? a.c4_train_hours : (v!=null? v/100*60 : null);
+    const flagPass = hoursVal==null? null : hoursVal>=60;
+    rows.push({crit:'C4', name:'Training Hours', who:'HR', standard:'เกณฑ์ภาคบังคับ = 60 ชม./ปี', mandatory:true,
       desc:'รวมชั่วโมงอบรม Clinical Training (≥30 ชม.) + Mandatory Training (≥30 ชม.) · ให้คะแนนตามสัดส่วนชั่วโมงจริง',
-      achieved: v!=null? v+(isHrs?' ชม.':'%'):'—', max, earned, flagPass:null, flagLabel:null,
-      gap: (v!=null && v<100 && !isHrs)? `เข้าอบรมเพิ่มอีกให้ครบ 60 ชม./ปี จะได้คะแนนเต็ม ${max} pts (ปัจจุบันได้ ${earned} pts)`:null,
+      achieved: hoursVal!=null? Math.round(hoursVal*10)/10+' ชม.':(v!=null? v+(isHrs?' ชม.':'%'):'—'), max, earned, flagPass,
+      flagLabel: flagPass==null?null:(flagPass?'ครบเกณฑ์ ≥60 ชม./ปี':'ไม่ครบเกณฑ์ ≥60 ชม./ปี (ภาคบังคับ)'),
+      gap: (hoursVal!=null && hoursVal<60)? `เข้าอบรมเพิ่มอีก ${Math.round((60-hoursVal)*10)/10} ชม. ให้ครบ 60 ชม./ปี จะได้คะแนนเต็ม ${max} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
       ref: buildLevelRef('c4_train', a.group, a.level)});
   }
 
@@ -792,7 +719,7 @@ function scoreBreakdown(a){
       rows.push({crit:'C5', name:s.name, who:'หัวหน้า', standard:`เกณฑ์เต็ม = ${s.max} ${s.unit}`,
         desc:`ให้คะแนนตามสัดส่วนที่ทำได้เทียบกับเกณฑ์เต็ม`,
         achieved: v!=null? v+' / '+s.max+' '+s.unit:'—', max:s.weight, earned, flagPass:null, flagLabel:null,
-        gap: (v!=null && v<s.max)? `ทำเพิ่มอีก ${Math.round((s.max-v)*10)/10} ${s.unit} จะได้คะแนนเต็ม ${s.weight} pts (ปัจจุบันได้ ${earned} pts)`:null,
+        gap: (v!=null && v<s.max)? `ทำเพิ่มอีก ${Math.round((s.max-v)*10)/10} ${s.unit} จะได้คะแนนเต็ม ${s.weight} คะแนน (ปัจจุบันได้ ${earned} คะแนน)`:null,
         ref: i===c5subs.length-1? c5ref : null});
     });
   } else {
@@ -833,30 +760,46 @@ function calcScore(a){
 }
 
 /* ============================================================
+   HARD GATE (เกณฑ์ภาคบังคับ) — Annual Test >=80%, Unit Test >=80%, ชั่วโมงอบรม >=60 ชม./ปี
+   ต่อให้คะแนนเฉลี่ยรวมจะผ่าน (>=80) ก็ตาม หากตกเกณฑ์ภาคบังคับข้อใดข้อหนึ่ง ผลรวมต้อง "ไม่ผ่าน"
+   ============================================================ */
+function checkHardGate(a){
+  const reasons = [];
+  const annualOk = a.c1_annual==null ? null : a.c1_annual>=80;
+  const unitOk   = a.c1_unit==null   ? null : a.c1_unit>=80;
+  // ใช้ชั่วโมงจริง (c4_train_hours) ถ้ามี ไม่งั้นอนุมานจาก % (100% = ครบ 60 ชม.)
+  const hoursVal = a.c4_train_hours!=null ? a.c4_train_hours : (a.c4_train!=null ? a.c4_train/100*60 : null);
+  const hoursOk  = hoursVal==null ? null : hoursVal>=60;
+
+  if(annualOk===false) reasons.push(`Annual Test ได้ ${a.c1_annual}% (ต้อง ≥80%)`);
+  if(unitOk===false)   reasons.push(`Unit Test ได้ ${a.c1_unit}% (ต้อง ≥80%)`);
+  if(hoursOk===false)  reasons.push(`ชั่วโมงอบรมสะสม ${Math.round(hoursVal*10)/10} ชม. (ต้อง ≥60 ชม./ปี)`);
+
+  return {
+    fail: reasons.length>0,
+    reasons,
+    annualOk, unitOk, hoursOk, hoursVal
+  };
+}
+
+/* ============================================================
    LOGIN
    ============================================================ */
-/* ============================================================
-   LOGIN — พิมพ์รหัสพนักงานเอง (ไม่ใช้ Dropdown เพราะข้อมูลจริงมี 300-400+ คน)
-   ============================================================ */
-function doLogin(){
-  const input = document.getElementById('login-emp-input');
-  const errBox = document.getElementById('login-error');
-  const empId = input.value.trim();
-  errBox.style.display = 'none';
+function initLoginOptions(){
+  const sel = document.getElementById('login-emp');
+  EMPLOYEES.forEach(e=>{
+    const opt = document.createElement('option');
+    opt.value = e.emp_id;
+    const roleLabel = e.role==='viewer'?'พนักงาน':e.role==='evaluator'?'หัวหน้างาน':'HR Admin';
+    opt.textContent = `${e.emp_id} — ${e.name} (${roleLabel})`;
+    sel.appendChild(opt);
+  });
+}
 
-  if(!empId){
-    errBox.textContent = 'กรุณากรอกรหัสพนักงาน';
-    errBox.style.display = 'block';
-    return;
-  }
-  const user = EMPLOYEES.find(e=>e.emp_id===empId);
-  if(!user){
-    errBox.textContent = 'ไม่พบรหัสพนักงานนี้ในระบบ — ตรวจสอบรหัสอีกครั้ง';
-    errBox.style.display = 'block';
-    AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'Login ล้มเหลว (ไม่พบรหัสพนักงาน)', ip:'127.0.0.1'});
-    return;
-  }
-  currentUser = user;
+function doLogin(){
+  const empId = document.getElementById('login-emp').value;
+  if(!empId){ toast('กรุณาเลือกรหัสพนักงานเพื่อทดสอบ'); return; }
+  currentUser = EMPLOYEES.find(e=>e.emp_id===empId);
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Login สำเร็จ (Demo)', ip:'127.0.0.1'});
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -868,8 +811,6 @@ function logout(){
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-pw').value='';
-  document.getElementById('login-emp-input').value='';
-  document.getElementById('login-error').style.display='none';
 }
 
 function nowStr(){
@@ -947,39 +888,47 @@ function gotoPage(page){
 function renderBreakdownCards(a){
   const breakdown = scoreBreakdown(a);
   const critLabel = {C1:'C1 — Knowledge Test',C2:'C2 — Function, Role & 360°B5F',C3:'C3 — Team Participation',C4:'C4 — Education & Training',C5:'C5 — Leadership & Assignment'};
+  const critWeightPct = {C1:'45%',C2:'25%',C3:'15%',C4:'5%',C5:'10%'}; // แสดงคร่าวๆ ไว้เทียบสัดส่วน (น้ำหนักจริงต่างกันตาม Level/กลุ่ม)
   const critGroups = ['C1','C2','C3','C4','C5'].map(cr=>({crit:cr, rows: breakdown.filter(r=>r.crit===cr)}));
   return critGroups.map(g=>{
     const critMax = g.rows.reduce((s,r)=>s+r.max,0);
     const critEarned = g.rows.reduce((s,r)=>s+(r.earned??0),0);
+    const anyPending = g.rows.some(r=>r.earned==null);
+    const anyHardFail = g.rows.some(r=>r.mandatory && r.flagPass===false);
+    const critPct = critMax? Math.round(critEarned/critMax*1000)/10 : 0;
+    // สถานะสรุปของหมวดนี้: แดง = ตกเกณฑ์ภาคบังคับ, เขียว = ผ่าน (>=80%), เหลือง = ยังไม่ผ่าน/รอปรับปรุง
+    let state = 'st-warn', stateLabel = 'ต้องปรับปรุง';
+    if(anyHardFail){ state='st-fail'; stateLabel='ตกเกณฑ์ภาคบังคับ'; }
+    else if(!anyPending && critPct>=80){ state='st-pass'; stateLabel='ผ่านเกณฑ์'; }
+    else if(anyPending){ state='st-warn'; stateLabel='รอดำเนินการ'; }
+    const stateIcon = state==='st-pass'?'✅':(state==='st-fail'?'❌':'🟡');
     return `<div class="card">
-      <div class="card-title" style="justify-content:space-between;display:flex">
-        <span>📋 ${critLabel[g.crit]}</span>
-        <span style="color:var(--green-d)">${Math.round(critEarned*10)/10} / ${critMax} pts</span>
+      <div class="card-title" style="justify-content:space-between;display:flex;flex-wrap:wrap;gap:8px">
+        <span>📋 ${critLabel[g.crit]} <span style="font-weight:400;color:var(--text-2);font-size:11.5px">(${critWeightPct[g.crit]})</span></span>
+        <span class="crit-summary-badge ${state}">${stateIcon} ${anyPending?'—':critPct+'%'} · ${stateLabel}</span>
       </div>
       ${g.rows.map(r=>{
         const done = r.earned!=null;
         const full = done && r.earned>=r.max-0.05;
-        const barPct = done? Math.min(r.earned/r.max*100,100) : 0;
-        const panelClass = !done ? 'r-pending' : (full ? 'r-full' : (r.flagPass===false ? 'r-fail' : ''));
-        const numColor = !done ? 'var(--text-2)' : (full? 'var(--green-d)' : (r.flagPass===false? 'var(--red)':'var(--gold-d)'));
-        const barColor = !done ? 'var(--border)' : (full? 'var(--green)' : (r.flagPass===false? 'var(--red)':'var(--gold)'));
-        const statusIcon = !done? '⏳' : (full? '✅' : (r.flagPass===false? '❌' : '🟡'));
-        return `<div class="item-row">
+        const isHardFail = r.mandatory && r.flagPass===false;
+        const panelClass = !done ? 'r-pending' : (isHardFail || r.flagPass===false ? 'r-fail' : (full ? 'r-full' : ''));
+        const numColor = !done ? 'var(--text-2)' : (isHardFail || r.flagPass===false ? 'var(--crimson-d)' : (full? 'var(--green-d)':'var(--gold-d)'));
+        const statusIcon = !done? '⏳' : (isHardFail || r.flagPass===false ? '❌' : (full? '✅':'🟡'));
+        return `<div class="item-row ${isHardFail?'row-hardgate-fail':''}">
           <div class="item-flex">
             <div class="item-left">
-              <div class="item-name">${r.name}</div>
+              <div class="item-name">${r.name}${r.mandatory?' <span style="font-size:10px;font-weight:700;color:var(--crimson-d);background:var(--crimson-l);padding:1px 7px;border-radius:6px;vertical-align:middle">ภาคบังคับ</span>':''}</div>
               ${r.standard? `<div class="item-standard">🎯 ${r.standard}</div>`:''}
               <div class="item-desc">${r.desc}</div>
               <div class="item-mid">
                 ${done?`<span class="item-achieved">ผลที่ได้: ${r.achieved}</span>`:''}
                 ${r.flagLabel? `<span class="${r.flagPass?'flag-pass':'flag-fail'}">${r.flagPass?'✓ ':'✗ '}${r.flagLabel}</span>`:''}
               </div>
-              ${r.gap? `<div class="item-gap">💡 <b>ต้องปรับปรุง:</b> ${r.gap}</div>` : (done && full? `<div class="item-gap" style="background:var(--green-l);color:var(--green-d)">✓ ได้คะแนนเต็มในหัวข้อนี้แล้ว</div>`:'')}
+              ${r.gap? `<div class="item-gap" style="${isHardFail?'background:var(--crimson-l);color:var(--crimson-d)':''}">💡 <b>ต้องปรับปรุง:</b> ${r.gap}</div>` : (done && full? `<div class="item-gap" style="background:var(--green-l);color:var(--green-d)">✓ ได้คะแนนเต็มในหัวข้อนี้แล้ว</div>`:'')}
             </div>
             <div class="item-right ${panelClass}">
               <div class="item-score-big" style="color:${numColor}">${done? r.earned : '—'}</div>
-              <div class="item-score-max">/ ${r.max} pts</div>
-              <div class="item-mini-bar"><div class="item-mini-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+              <div class="item-score-max">/ ${r.max} คะแนน</div>
               <div class="item-status-icon">${statusIcon}</div>
             </div>
           </div>
@@ -989,24 +938,95 @@ function renderBreakdownCards(a){
   }).join('');
 }
 
+function careerPathHtml(a){
+  const cfg = CONFIG[a.group];
+  const levels = cfg.levels;
+  const steps = levels.map(l=>{
+    const cls = l<a.level? 'done' : (l===a.level? 'current':'');
+    const tag = l<a.level? `<span class="cp-tag done">ผ่านมาแล้ว</span>` : (l===a.level? `<span class="cp-tag now">ตำแหน่งปัจจุบัน</span>` : (l===a.level+1? `<span class="cp-tag next">เป้าหมายถัดไป</span>`:''));
+    return `<div class="cp-step ${cls}">
+      <div class="cp-dot">${l<a.level? '✓' : 'L'+l}</div>
+      <div class="cp-body">
+        <div class="cp-name">${cfg.labels[l]}</div>
+        <div class="cp-meta">${l===a.level? 'Level ปัจจุบันของคุณ' : (l<a.level? 'ผ่านเกณฑ์เลื่อนขั้นแล้ว':'ต้องผ่านเกณฑ์รวม ≥80% และไม่ติด Hard Gate')}</div>
+        ${tag}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="card-title">🧭 เส้นทางสายอาชีพ (Career Path)</div>
+    ${steps}
+  </div>`;
+}
+
+function idpHtml(a, hg){
+  const breakdown = scoreBreakdown(a);
+  const gaps = breakdown.filter(r=>r.gap);
+  const hoursVal = hg.hoursVal;
+  const hoursPct = hoursVal!=null? Math.min(hoursVal/60*100,100) : 0;
+  const ringColor = hg.hoursOk===false? 'var(--crimson)' : 'var(--green)';
+  return `<div class="card">
+    <div class="card-title">🎓 แผนพัฒนารายบุคคล (IDP) &amp; ชั่วโมงการเรียนรู้</div>
+    <div class="idp-row" style="border-bottom:1.5px solid var(--border);padding-bottom:14px;margin-bottom:6px">
+      <div>
+        <div class="idp-name" style="font-size:13px">ชั่วโมงอบรมสะสม (ปีนี้)<small>เกณฑ์ภาคบังคับ ≥ 60 ชม./ปี</small></div>
+        ${hg.hoursOk===false? `<div style="font-size:11px;color:var(--crimson-d);font-weight:700;margin-top:4px">⚠️ ยังไม่ครบเกณฑ์ภาคบังคับ</div>`:''}
+      </div>
+      <div class="idp-hours-ring" style="background:conic-gradient(${ringColor} ${hoursPct}%, var(--border) ${hoursPct}% 100%)">
+        <div class="idp-hours-hole"><b>${hoursVal!=null?Math.round(hoursVal*10)/10:'—'}</b><span>/ 60 ชม.</span></div>
+      </div>
+    </div>
+    ${gaps.length? gaps.slice(0,5).map(g=>`
+      <div class="idp-row">
+        <div class="idp-name">${g.name}${g.mandatory?' <span style="font-size:9.5px;font-weight:700;color:var(--crimson-d)">(ภาคบังคับ)</span>':''}<small>${g.gap}</small></div>
+      </div>`).join('') : `<div class="empty" style="padding:16px 0">ไม่มีหัวข้อที่ต้องพัฒนาเพิ่มเติมในรอบนี้ 🎉</div>`}
+  </div>`;
+}
+
 function renderResult(c){
   const a = ASSESSMENTS.find(x=>x.emp_id===currentUser.emp_id);
   if(!a){ c.innerHTML = `<div class="card"><div class="empty">ยังไม่มีผลการประเมินสำหรับรอบนี้</div></div>`; return; }
   a.total = calcScore(a);
-  const pass = a.total>=80;
+  const hg = checkHardGate(a);
+  const pass = a.total>=80 && !hg.fail;
   const cfg = CONFIG[a.group];
 
+  const banner = hg.fail
+    ? `<div class="status-banner fail">
+        <div class="status-banner-icon">⚠️</div>
+        <div style="flex:1">
+          <div class="status-banner-title">❌ ผลการประเมิน: ไม่ผ่านเกณฑ์ (Failed)</div>
+          <div class="status-banner-sub">ติดเกณฑ์ภาคบังคับ (Hard Gate) แม้คะแนนเฉลี่ยรวมจะคำนวณได้ ${a.total}/100 ก็ตาม ต้องดำเนินการแก้ไขหัวข้อต่อไปนี้ก่อนจึงจะผ่านการประเมิน:</div>
+          <div class="status-banner-reasons">
+            ${hg.reasons.map(r=>`<div class="status-banner-reason">❌ ${r}</div>`).join('')}
+          </div>
+        </div>
+      </div>`
+    : `<div class="status-banner ok">
+        <div class="status-banner-icon">✅</div>
+        <div style="flex:1">
+          <div class="status-banner-title">ผลการประเมิน: ผ่านเกณฑ์ (Passed)</div>
+          <div class="status-banner-sub">ผ่านเกณฑ์ภาคบังคับครบทุกข้อ และคะแนนรวม ${a.total}/100 (เกณฑ์ผ่าน ≥80)</div>
+        </div>
+      </div>`;
+
   c.innerHTML = `
+  ${banner}
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
       <div>
         <div style="font-size:13px;color:var(--text-2)">${cfg.labels[a.level]} · อัปเดตล่าสุด ${a.updated}</div>
-        <div style="font-size:32px;font-weight:800;color:${pass?'var(--green)':'var(--red)'};margin-top:4px">${a.total} <span style="font-size:15px;font-weight:600;color:var(--text-2)">/ 100</span></div>
+        <div style="font-size:32px;font-weight:800;color:${pass?'var(--green)':'var(--crimson)'};margin-top:4px">${a.total} <span style="font-size:15px;font-weight:600;color:var(--text-2)">/ 100</span></div>
       </div>
       <span class="badge ${pass?'badge-pass':'badge-fail'}" style="font-size:13px;padding:6px 16px">${pass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}</span>
     </div>
     <div class="progress-wrap"><div class="progress-fill ${pass?'':'fail'}" style="width:${Math.min(a.total,100)}%"></div></div>
-    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน</div>
+    <div style="font-size:11.5px;color:var(--text-2)">เกณฑ์ผ่าน: คะแนนรวม ≥ 80 คะแนน และต้องไม่ติดเกณฑ์ภาคบังคับ (Annual Test / Unit Test ≥80%, ชั่วโมงอบรม ≥60 ชม./ปี)</div>
+  </div>
+
+  <div class="dash-grid">
+    ${careerPathHtml(a)}
+    ${idpHtml(a, hg)}
   </div>
 
   ${renderBreakdownCards(a)}
@@ -1098,7 +1118,7 @@ function subRowsHtml(subs, savedVals, prefix){
     return `<div class="sub-row">
       <div class="sub-name">${s.name}<small>เกณฑ์เต็ม ${s.max} ${s.unit}</small></div>
       <div class="sub-input-wrap"><input class="sub-input" type="number" step="0.1" min="0" id="${prefix}-${s.id}" value="${v}"><span class="sub-max">/ ${s.max}</span></div>
-      <div class="sub-weight">${s.weight} pts</div>
+      <div class="sub-weight">${s.weight} คะแนน</div>
     </div>`;
   }).join('');
 }
