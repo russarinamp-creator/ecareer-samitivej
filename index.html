@@ -256,6 +256,24 @@ tr:hover td{background:var(--ivory-2)}
 .tip-box b{color:var(--text)}
 select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;margin-bottom:16px;background:#fff}
 
+/* ===== SEARCHABLE SELECT (Autocomplete) — แทน <select> เดิมที่ต้องเลื่อนหาชื่อยาวๆ ===== */
+.ss-wrap{position:relative;margin-bottom:16px}
+.ss-input-wrap{display:flex;align-items:center;gap:9px;border:1.5px solid var(--border);border-radius:11px;padding:0 14px;background:var(--ivory-2);transition:border-color .15s,box-shadow .15s,background .15s}
+.ss-input-wrap:focus-within{border-color:var(--green);box-shadow:0 0 0 3px var(--green-l);background:#fff}
+.ss-icon{font-size:15px;color:var(--text-2);flex-shrink:0}
+.ss-input{flex:1;min-width:0;border:none;background:transparent;padding:12px 0;font-size:14px;font-family:inherit;color:var(--text);outline:none}
+.ss-input::placeholder{color:#96A69D}
+.ss-clear{cursor:pointer;color:var(--text-2);font-size:12px;padding:4px 6px;border-radius:6px;flex-shrink:0;line-height:1}
+.ss-clear:hover{background:var(--border);color:var(--text)}
+.ss-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(18,63,39,.16);max-height:320px;overflow-y:auto;z-index:80;display:none;padding:6px}
+.ss-panel.show{display:block}
+.ss-group-label{font-size:10.5px;font-weight:800;color:var(--green-d);text-transform:uppercase;letter-spacing:.04em;padding:10px 10px 6px;background:#fff;position:sticky;top:0}
+.ss-option{padding:9px 10px;border-radius:9px;cursor:pointer;display:flex;flex-direction:column;gap:1px;transition:background .1s}
+.ss-option:hover,.ss-option.active{background:var(--green-l)}
+.ss-option-name{font-size:13px;font-weight:600;color:var(--text)}
+.ss-option-sub{font-size:11px;color:var(--text-2)}
+.ss-empty{padding:20px 10px;text-align:center;font-size:12.5px;color:var(--text-2)}
+
 .print-only{display:none}
 
 @media print{
@@ -302,9 +320,7 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
     <div class="login-sub">E-Career Path &amp; IDP System · เภสัชกรรมสมิติเวช</div>
     <div class="field">
       <label>รหัสพนักงาน (Employee ID)</label>
-      <select id="login-emp">
-        <option value="">— เลือกรหัสพนักงานเพื่อทดสอบ Demo —</option>
-      </select>
+      <div class="ss-wrap" id="login-emp-ss"></div>
     </div>
     <div class="field">
       <label>รหัสผ่าน</label>
@@ -386,7 +402,7 @@ const CONFIG = {
   }
 };
 
-const DEPARTMENTS = ['เภสัชกรรม OPD','เภสัชกรรม IPD','เภสัชกรรมฉุกเฉิน (ER)','ผู้ช่วยเภสัชกรรม','Thai Insurance (UR Officer)','เภสัชกรรมคลินิก (Career Track Demo)','เภสัชกรรม รพ.สมิติเวช สุขุมวิท','เภสัชกรรม รพ.สมิติเวช ศรีนครินทร์'];
+const DEPARTMENTS = ['เภสัชกรรม OPD','เภสัชกรรม IPD','เภสัชกรรมฉุกเฉิน (ER)','ผู้ช่วยเภสัชกรรม','Thai Insurance (UR Officer)','เภสัชกรรมคลินิก (Career Track Demo)','เภสัชกรรม รพ.สมิติเวช สุขุมวิท','เภสัชกรรม รพ.สมิติเวช ศรีนครินทร์','รังสีวิทยา รพ.สมิติเวช สุขุมวิท','รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์','พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท','พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์','กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์'];
 
 const EMPLOYEES = [
   // เภสัชกรรม OPD
@@ -530,6 +546,135 @@ const EMPLOYEES = [
   {emp_id:'113717', name:'เกศรา ชูคำสัตย์', dept:'เภสัชกรรม รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:2, role:'viewer'},
   {emp_id:'530150', name:'จุฑารัตน์ จิตตกลาง', dept:'เภสัชกรรม รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:2, role:'viewer'},
   {emp_id:'580697', name:'สุพรรษา ศรีภิรมย์', dept:'เภสัชกรรม รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer'},
+  // ==== หัวหน้างานจริงของแผนกอื่น (จากคอลัมน์ Supervisor ในไฟล์ Test_Med.xlsx) ====
+  {emp_id:'112354', name:'ฤทธิไกร วงศ์ปัญญา', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'524389', name:'เสริมศักดิ์ แสงเพ็ชร', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'110167', name:'เมตตา จารุกิจจรูญ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'112822', name:'สุรภา สายแก้ว', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'evaluator'},
+  {emp_id:'110676', name:'สร้อยไข่ มหรรทัศนพงศ์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'evaluator'},
+  // ==== พนักงานจริงแผนก Imaging / Pathology / Physical Therapy จากไฟล์ Test_Med.xlsx ====
+  {emp_id:'614512', name:'ธัญญลักษณ์ เตชะสุริยาวงศ์', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'599576', name:'เมธาวดี หาริตะวัน', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'580799', name:'พัชรินทร์ อาษาธง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'580858', name:'ปทุมพร อ่อนดี', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'611884', name:'กีรฏิยา ชัยชนะ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'611121', name:'อัฐภิญญาพร ระมั่ง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'623704', name:'เอกณัฐ ทนงูเหลือม', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'624377', name:'ศริญญา เย็นประเสริฐ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'110151', name:'ปิ่นกันยา นาสวน', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'621162', name:'กำพล หมั่นอารี', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'607205', name:'นพมาศ อุดนัน', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'567344', name:'ศิริขวัญ ฝั่งซ้าย', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'601712', name:'ณัฐธยาน์ บุญมี', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'541974', name:'ชนิตา เจือจาน', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'600574', name:'รัฐนันท์ เจียรประเสริฐพร', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'534456', name:'สุภัสรา พึ่งตาแสง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'545990', name:'วิภารัตน์ โกสิลารัตน์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'546404', name:'วัลลภา เหล่าภักดี', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'600624', name:'ทิราภรณ์ แนวอินทร์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'610247', name:'อาณยา แซ่เอีย', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'592545', name:'กมลลักษณ์ พานวิจิตรา', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'625218', name:'อนันตศักดิ์ ฮุงหวน', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'533400', name:'กฤชพล ปัญบุญมี', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'533420', name:'ปรีดาวรรณ ทิพย์รัตน์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'578635', name:'สุนิศา นาคราช', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'539571', name:'รจเรข ทองยศ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'532786', name:'ยุภา ประกอบแก้ว', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'536175', name:'อมรรัตน์ แยบกระโทก', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'112425', name:'ทชภณ ศรีธรรมมา', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'586056', name:'ธิดารัตน์ บุตตะ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'112424', name:'อภิญญา รักษาพันธ์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'581875', name:'จุฑามาศ บุญเกษม', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'547563', name:'ชไมพร โลราช', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'580698', name:'ชลณัชชา โคตรพัฒน์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'515996', name:'จิราพร พะวงษ์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'518171', name:'ทิชากร คงแก้ว', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'575215', name:'สุภัค โกสีย์เจริญ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'567340', name:'ณิชาภัทร แซ่ปึ้ง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'567342', name:'ปารัชญ์ ชีพอรุณ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'570502', name:'อภิษฎา เพ็ชรเจริญ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'546734', name:'กุลภัสสร์ คำตีด', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'583821', name:'นุชนาฎ พิมพ์วิเศษ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'529739', name:'เบญจมาภรณ์ ผิวหล่อ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'113058', name:'วิภาภรณ์ เหวันต์', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'519821', name:'กิ่งกาญจน์ อ่อนจันทร์อม', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'519822', name:'ศรัญญา บุตรหนัน', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'110147', name:'ภิสันต์ ศาสตร์เฟื่องฟู', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'571742', name:'อชิรญาณ์ ร่วมจิตร', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'571747', name:'ธัชพล ศิริทรัพย์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'560354', name:'ภูริช หาญเทวี', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:2, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'550655', name:'ณัฐสุดา แซมมงคล', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'550727', name:'กฤติยา กะรัตน์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'510298', name:'อังศุมาจิน ทิพย์จันทร์', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'110153', name:'ธีรภัทร แก้วหาญ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'110160', name:'ปรียาภรณ์ พรานบุญ', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'112173', name:'สุจิตรา เหล็กคม', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'550725', name:'เบญจวรรณ แซ่ตั้ง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:4, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'503288', name:'บุปผา ทองย่อย', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'515946', name:'ชินพันธ์ กรฤทธิ์วรพัฒน์', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักรังสีเทคนิค'},
+  {emp_id:'543489', name:'ณัฐธิดา เวียงลอ', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'113515', name:'ภัศรินทร์ สะอาด', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'530507', name:'อมรพรรณ เชิญรัมย์', dept:'รังสีวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'112799', name:'สุวัฒน์ชัย ส่งแสง', dept:'รังสีวิทยา รพ.สมิติเวช สุขุมวิท', group:'med_support', level:4, role:'viewer', title:'นักรังสีเทคนิค'},
+  {emp_id:'603860', name:'วินัย เบ้าทอง', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'562552', name:'วริศรา อุ่นผูก', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'574732', name:'จินตนา สุขแสน', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักเทคนิคพยาธิวิทยา'},
+  {emp_id:'520420', name:'นภัสพร รัตนบุรี', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'538106', name:'พรสุดา จันทร์อุทัย', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'110696', name:'น้ำอ้อย แดงแย้ม', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'113525', name:'กาญจนา เพียงชัยภูมิ', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'553420', name:'มณฑารพ ตื้อแก้ว', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'114313', name:'ปิยะพร สิงห์น้อย', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'514899', name:'กัลยา ใจกว้าง', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'515614', name:'ผกามาศ เรืองแก้ว', dept:'พยาธิวิทยา รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักเทคนิคพยาธิวิทยา'},
+  {emp_id:'592264', name:'ณัชวรัตม์ จันทร์งาม', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'591395', name:'รุ่งนภาพร ทองวิเศษ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'110682', name:'วรรณภา พรสวัสดิ์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'524170', name:'ปายฝน ผอมเกื้อ', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'110170', name:'ดวงตรา วงค์แสง', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'560865', name:'วิชุดา ลาปีอี', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'569683', name:'รัตติญา บุญรัตน์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'533177', name:'ช่อทิพย์ แข็งขัน', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'112559', name:'ขวัญตา กาหลงรัตน์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'113706', name:'วรรณี ศรีธาตุ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:3, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'611919', name:'สมฤดี จิตรรัก', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'573752', name:'เกศราพร โมหมัดตาเฮต', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'540467', name:'กมลชนก ดีจันทร์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'113714', name:'เพ็ญประภา กาสุข', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'595298', name:'นูรฟาตีณี วาแม', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'592797', name:'วิราวรรณ ขัดมัน', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'507329', name:'ลัดดา วงค์วาลย์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'assistant', level:1, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'522118', name:'ขนิษฐา สมปิตะ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'529287', name:'สุคนธ์ทิพย์ ตลอดพงษ์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'515986', name:'กิตติกร มหาวรรณ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'assistant', level:2, role:'viewer', title:'ผู้ช่วยนักกายภาพบำบัด'},
+  {emp_id:'623790', name:'ดวงสมร แก้วรุ่งเรือง', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:1, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'624366', name:'ปภาวี บุญสอด', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'600781', name:'ชฏาพร มหาวัน', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักกิจกรรมบำบัด'},
+  {emp_id:'606005', name:'ดณชนก ปัญญาวิมุตติ์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'591638', name:'ธันยธร มานะสุข', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'559620', name:'ทักษิณะ จึงจรัสทรัพย์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:1, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'529879', name:'สืบพงศ์ มูลคำ', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:2, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'516543', name:'กันตพร อำภา', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:2, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'060383', name:'ขวัญหฤทัย ถุงน้ำคำ', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'590135', name:'พรรณทิภา ประยูรรัตน์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'506788', name:'ชวลิต จงหอมขจร', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'505836', name:'กอบทอง เฉลิมชัย', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'505837', name:'ณัฐวุฒิ วัยเจริญ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'114118', name:'อุดมเดช พัฒนะจุฑา', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'111818', name:'พินิจ วิทยสุนทร', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'112651', name:'ปิยะดา บุญสิงห์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'112416', name:'ณัชชารีย์ ภัสสรารุจินันท์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'113531', name:'พรพรรณ ประกายสันติสุข', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'112522', name:'ชนิกานต์ วิรุตมวงศ์', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'111806', name:'สุชาดา ตั้งจิตเพียรพงศ์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'112219', name:'อานุภาพ ผัดผล', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกิจกรรมบำบัด'},
+  {emp_id:'111268', name:'วันทนีย์ กมลเสถียรรัตน์', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'111794', name:'รัชดาภรณ์ พรมปัญญา', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'551597', name:'วัชริตา ฤกษ์วัฒนสิริกุล', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:3, role:'viewer', title:'นักกิจกรรมบำบัด'},
+  {emp_id:'113961', name:'ทรรศนีย์ เลิศพงศ์กร', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกิจกรรมบำบัด'},
+  {emp_id:'513115', name:'ทิพวรรณ ทุมโคตร', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:3, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'507304', name:'วโรธร เจริญสุข', dept:'กายภาพบำบัด รพ.สมิติเวช ศรีนครินทร์', group:'med_support', level:4, role:'viewer', title:'นักกายภาพบำบัด'},
+  {emp_id:'112124', name:'ศิริลักษณ์ เจริญศิริ', dept:'พยาธิวิทยา และกายภาพบำบัด รพ.สมิติเวช สุขุมวิท', group:'med_support', level:4, role:'viewer', title:'นักกายภาพบำบัด'},
 ];
 
 // mutable in-memory "assessments" store for the demo session
@@ -901,6 +1046,358 @@ ASSESSMENTS.push(
    c3_team:73, c4_train:100, c4_train_hours:74.5, c5_lead:78, updated:'เม.ย. 2569'}
 );
 
+// ==== ผลประเมิน (Mock) ของแผนก Imaging/Pathology/Physical Therapy — deterministic ====
+ASSESSMENTS.push(
+  {session_id:'OD-599576', emp_id:'599576', level:1, group:'assistant', status:'approved',
+   c1_annual:84, c1_unit:97, c1_eng_type:'toeic', c1_eng_val:347, c2_func:90, c2_b5f:3.94,
+   c3_team:59, c4_train:100, c4_train_hours:72.2, c5_lead:95, updated:'ส.ค. 2569'},
+  {session_id:'OD-580799', emp_id:'580799', level:2, group:'assistant', status:'approved',
+   c1_annual:85, c1_unit:89, c1_eng_type:'toeic', c1_eng_val:407, c2_func:75, c2_b5f:4.64,
+   c3_team:95, c4_train:100, c4_train_hours:65.6, c5_lead:79, updated:'ก.พ. 2569'},
+  {session_id:'OD-580858', emp_id:'580858', level:2, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-611884', emp_id:'611884', level:1, group:'med_support', status:'approved',
+   c1_annual:91, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:388, c2_func:98, c2_b5f:4.28,
+   c3_team:92, c4_train:100, c4_train_hours:76.9, c5_lead:51, updated:'เม.ย. 2569'},
+  {session_id:'OD-611121', emp_id:'611121', level:1, group:'med_support', status:'approved',
+   c1_annual:89, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:445, c2_func:83, c2_b5f:4.19,
+   c3_team:71, c4_train:100, c4_train_hours:68.6, c5_lead:80, updated:'ส.ค. 2569'},
+  {session_id:'OD-110151', emp_id:'110151', level:2, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-607205', emp_id:'607205', level:1, group:'med_support', status:'approved',
+   c1_annual:96, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:426, c2_func:78, c2_b5f:4.2,
+   c3_team:100, c4_train:100, c4_train_hours:71.9, c5_lead:84, updated:'ก.พ. 2569'},
+  {session_id:'OD-567344', emp_id:'567344', level:2, group:'assistant', status:'submitted',
+   c1_annual:86, c1_unit:89, c1_eng_type:'toeic', c1_eng_val:382, c2_func:74, c2_b5f:4.0,
+   c3_team:85, c4_train:100, c4_train_hours:68.9, c5_lead:80, updated:'ส.ค. 2569'},
+  {session_id:'OD-601712', emp_id:'601712', level:1, group:'med_support', status:'approved',
+   c1_annual:86, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:437, c2_func:87, c2_b5f:4.28,
+   c3_team:68, c4_train:100, c4_train_hours:65.0, c5_lead:82, updated:'ส.ค. 2569'},
+  {session_id:'OD-541974', emp_id:'541974', level:2, group:'assistant', status:'approved',
+   c1_annual:92, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:376, c2_func:77, c2_b5f:4.6,
+   c3_team:82, c4_train:66.2, c4_train_hours:39.7, c5_lead:62, updated:'มิ.ย. 2569'},
+  {session_id:'OD-600574', emp_id:'600574', level:1, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:386, c2_func:74, c2_b5f:4.64,
+   c3_team:69, c4_train:100, c4_train_hours:75.6, c5_lead:74, updated:'มิ.ย. 2569'},
+  {session_id:'OD-534456', emp_id:'534456', level:2, group:'assistant', status:'approved',
+   c1_annual:94, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:408, c2_func:79, c2_b5f:4.2,
+   c3_team:90, c4_train:100, c4_train_hours:66.7, c5_lead:72, updated:'ม.ค. 2569'},
+  {session_id:'OD-545990', emp_id:'545990', level:2, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-546404', emp_id:'546404', level:2, group:'assistant', status:'approved',
+   c1_annual:96, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:389, c2_func:95, c2_b5f:4.7,
+   c3_team:88, c4_train:100, c4_train_hours:62.0, c5_lead:59, updated:'พ.ค. 2569'},
+  {session_id:'OD-600624', emp_id:'600624', level:1, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:465, c2_func:88, c2_b5f:3.8,
+   c3_team:94, c4_train:100, c4_train_hours:74.3, c5_lead:53, updated:'ก.ค. 2569'},
+  {session_id:'OD-610247', emp_id:'610247', level:1, group:'med_support', status:'approved',
+   c1_annual:87, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:448, c2_func:97, c2_b5f:4.81,
+   c3_team:68, c4_train:100, c4_train_hours:61.7, c5_lead:49, updated:'ก.ค. 2569'},
+  {session_id:'OD-592545', emp_id:'592545', level:1, group:'med_support', status:'submitted',
+   c1_annual:92, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:387, c2_func:90, c2_b5f:3.98,
+   c3_team:59, c4_train:100, c4_train_hours:75.5, c5_lead:58, updated:'พ.ค. 2569'},
+  {session_id:'OD-625218', emp_id:'625218', level:1, group:'assistant', status:'submitted',
+   c1_annual:90, c1_unit:97, c1_eng_type:'toeic', c1_eng_val:373, c2_func:81, c2_b5f:3.89,
+   c3_team:93, c4_train:100, c4_train_hours:69.6, c5_lead:68, updated:'ก.ค. 2569'},
+  {session_id:'OD-533400', emp_id:'533400', level:2, group:'assistant', status:'approved',
+   c1_annual:92, c1_unit:89, c1_eng_type:'toeic', c1_eng_val:372, c2_func:91, c2_b5f:4.69,
+   c3_team:62, c4_train:69.0, c4_train_hours:41.4, c5_lead:80, updated:'มิ.ย. 2569'},
+  {session_id:'OD-533420', emp_id:'533420', level:2, group:'assistant', status:'approved',
+   c1_annual:91, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:423, c2_func:72, c2_b5f:4.54,
+   c3_team:99, c4_train:100, c4_train_hours:64.7, c5_lead:87, updated:'พ.ค. 2569'},
+  {session_id:'OD-578635', emp_id:'578635', level:2, group:'med_support', status:'approved',
+   c1_annual:77, c1_unit:70, c1_eng_type:'toeic', c1_eng_val:535, c2_func:88, c2_b5f:4.42,
+   c3_team:67, c4_train:100, c4_train_hours:67.5, c5_lead:82, updated:'ส.ค. 2569'},
+  {session_id:'OD-539571', emp_id:'539571', level:2, group:'assistant', status:'approved',
+   c1_annual:96, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:356, c2_func:78, c2_b5f:4.47,
+   c3_team:65, c4_train:100, c4_train_hours:67.8, c5_lead:57, updated:'ก.ค. 2569'},
+  {session_id:'OD-532786', emp_id:'532786', level:2, group:'assistant', status:'approved',
+   c1_annual:77, c1_unit:68, c1_eng_type:'toeic', c1_eng_val:412, c2_func:89, c2_b5f:4.01,
+   c3_team:62, c4_train:100.0, c4_train_hours:60.0, c5_lead:60, updated:'ก.พ. 2569'},
+  {session_id:'OD-536175', emp_id:'536175', level:2, group:'assistant', status:'submitted',
+   c1_annual:94, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:412, c2_func:91, c2_b5f:4.37,
+   c3_team:74, c4_train:100, c4_train_hours:68.3, c5_lead:94, updated:'พ.ค. 2569'},
+  {session_id:'OD-112425', emp_id:'112425', level:2, group:'assistant', status:'approved',
+   c1_annual:90, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:376, c2_func:80, c2_b5f:4.14,
+   c3_team:66, c4_train:100, c4_train_hours:67.0, c5_lead:92, updated:'ก.พ. 2569'},
+  {session_id:'OD-586056', emp_id:'586056', level:2, group:'assistant', status:'approved',
+   c1_annual:91, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:363, c2_func:86, c2_b5f:4.63,
+   c3_team:93, c4_train:51.3, c4_train_hours:30.8, c5_lead:99, updated:'ม.ค. 2569'},
+  {session_id:'OD-112424', emp_id:'112424', level:2, group:'assistant', status:'approved',
+   c1_annual:94, c1_unit:97, c1_eng_type:'toeic', c1_eng_val:393, c2_func:81, c2_b5f:4.56,
+   c3_team:76, c4_train:100, c4_train_hours:72.6, c5_lead:90, updated:'ก.พ. 2569'},
+  {session_id:'OD-581875', emp_id:'581875', level:2, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:478, c2_func:95, c2_b5f:3.86,
+   c3_team:62, c4_train:100, c4_train_hours:73.9, c5_lead:78, updated:'เม.ย. 2569'},
+  {session_id:'OD-547563', emp_id:'547563', level:2, group:'assistant', status:'submitted',
+   c1_annual:95, c1_unit:93, c1_eng_type:'toeic', c1_eng_val:422, c2_func:78, c2_b5f:4.48,
+   c3_team:67, c4_train:100, c4_train_hours:64.8, c5_lead:66, updated:'ม.ค. 2569'},
+  {session_id:'OD-580698', emp_id:'580698', level:2, group:'med_support', status:'approved',
+   c1_annual:78, c1_unit:75, c1_eng_type:'toeic', c1_eng_val:508, c2_func:88, c2_b5f:4.55,
+   c3_team:58, c4_train:100, c4_train_hours:65.9, c5_lead:52, updated:'มี.ค. 2569'},
+  {session_id:'OD-515996', emp_id:'515996', level:2, group:'assistant', status:'approved',
+   c1_annual:95, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:415, c2_func:90, c2_b5f:4.03,
+   c3_team:69, c4_train:100, c4_train_hours:65.6, c5_lead:84, updated:'เม.ย. 2569'},
+  {session_id:'OD-518171', emp_id:'518171', level:2, group:'assistant', status:'approved',
+   c1_annual:97, c1_unit:68, c1_eng_type:'toeic', c1_eng_val:374, c2_func:89, c2_b5f:4.38,
+   c3_team:76, c4_train:100, c4_train_hours:63.7, c5_lead:71, updated:'มี.ค. 2569'},
+  {session_id:'OD-575215', emp_id:'575215', level:2, group:'med_support', status:'approved',
+   c1_annual:93, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:459, c2_func:75, c2_b5f:4.23,
+   c3_team:62, c4_train:100, c4_train_hours:60.6, c5_lead:69, updated:'มี.ค. 2569'},
+  {session_id:'OD-567340', emp_id:'567340', level:2, group:'med_support', status:'approved',
+   c1_annual:93, c1_unit:91, c1_eng_type:'toeic', c1_eng_val:524, c2_func:94, c2_b5f:4.74,
+   c3_team:61, c4_train:100, c4_train_hours:60.7, c5_lead:75, updated:'พ.ค. 2569'},
+  {session_id:'OD-567342', emp_id:'567342', level:2, group:'med_support', status:'approved',
+   c1_annual:89, c1_unit:90, c1_eng_type:'toeic', c1_eng_val:444, c2_func:97, c2_b5f:4.64,
+   c3_team:94, c4_train:100, c4_train_hours:61.4, c5_lead:83, updated:'พ.ค. 2569'},
+  {session_id:'OD-570502', emp_id:'570502', level:2, group:'med_support', status:'approved',
+   c1_annual:87, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:516, c2_func:95, c2_b5f:4.35,
+   c3_team:94, c4_train:100, c4_train_hours:60.5, c5_lead:73, updated:'ก.ค. 2569'},
+  {session_id:'OD-546734', emp_id:'546734', level:2, group:'assistant', status:'approved',
+   c1_annual:84, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:377, c2_func:73, c2_b5f:4.13,
+   c3_team:70, c4_train:100, c4_train_hours:72.3, c5_lead:100, updated:'ก.ค. 2569'},
+  {session_id:'OD-583821', emp_id:'583821', level:2, group:'assistant', status:'approved',
+   c1_annual:98, c1_unit:97, c1_eng_type:'toeic', c1_eng_val:434, c2_func:89, c2_b5f:4.77,
+   c3_team:71, c4_train:95.8, c4_train_hours:57.5, c5_lead:52, updated:'พ.ค. 2569'},
+  {session_id:'OD-529739', emp_id:'529739', level:2, group:'assistant', status:'approved',
+   c1_annual:94, c1_unit:94, c1_eng_type:'toeic', c1_eng_val:424, c2_func:76, c2_b5f:4.84,
+   c3_team:71, c4_train:100, c4_train_hours:68.8, c5_lead:85, updated:'ส.ค. 2569'},
+  {session_id:'OD-113058', emp_id:'113058', level:2, group:'assistant', status:'approved',
+   c1_annual:92, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:419, c2_func:85, c2_b5f:3.86,
+   c3_team:89, c4_train:100, c4_train_hours:71.6, c5_lead:92, updated:'มิ.ย. 2569'},
+  {session_id:'OD-519821', emp_id:'519821', level:2, group:'assistant', status:'submitted',
+   c1_annual:89, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:348, c2_func:84, c2_b5f:4.39,
+   c3_team:95, c4_train:100, c4_train_hours:72.1, c5_lead:58, updated:'มี.ค. 2569'},
+  {session_id:'OD-519822', emp_id:'519822', level:2, group:'assistant', status:'approved',
+   c1_annual:98, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:395, c2_func:82, c2_b5f:4.33,
+   c3_team:62, c4_train:100, c4_train_hours:64.3, c5_lead:50, updated:'ก.พ. 2569'},
+  {session_id:'OD-110147', emp_id:'110147', level:3, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-571742', emp_id:'571742', level:2, group:'med_support', status:'approved',
+   c1_annual:99, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:526, c2_func:91, c2_b5f:4.83,
+   c3_team:60, c4_train:100, c4_train_hours:67.5, c5_lead:91, updated:'เม.ย. 2569'},
+  {session_id:'OD-571747', emp_id:'571747', level:2, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:460, c2_func:89, c2_b5f:4.49,
+   c3_team:75, c4_train:100, c4_train_hours:69.1, c5_lead:75, updated:'พ.ค. 2569'},
+  {session_id:'OD-560354', emp_id:'560354', level:2, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:88, c1_eng_type:'toeic', c1_eng_val:512, c2_func:77, c2_b5f:3.95,
+   c3_team:81, c4_train:100, c4_train_hours:66.4, c5_lead:79, updated:'ม.ค. 2569'},
+  {session_id:'OD-550655', emp_id:'550655', level:3, group:'med_support', status:'approved',
+   c1_annual:87, c1_unit:88, c1_eng_type:'toeic', c1_eng_val:526, c2_func:75, c2_b5f:3.84,
+   c3_team:96, c4_train:100, c4_train_hours:74.6, c5_lead:82, updated:'ส.ค. 2569'},
+  {session_id:'OD-550727', emp_id:'550727', level:3, group:'med_support', status:'approved',
+   c1_annual:93, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:537, c2_func:88, c2_b5f:4.19,
+   c3_team:76, c4_train:100, c4_train_hours:62.4, c5_lead:50, updated:'มี.ค. 2569'},
+  {session_id:'OD-510298', emp_id:'510298', level:3, group:'med_support', status:'approved',
+   c1_annual:91, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:457, c2_func:77, c2_b5f:4.38,
+   c3_team:92, c4_train:100, c4_train_hours:66.7, c5_lead:53, updated:'เม.ย. 2569'},
+  {session_id:'OD-110153', emp_id:'110153', level:3, group:'assistant', status:'approved',
+   c1_annual:79, c1_unit:69, c1_eng_type:'toeic', c1_eng_val:484, c2_func:78, c2_b5f:4.42,
+   c3_team:99, c4_train:100, c4_train_hours:66.8, c5_lead:89, updated:'เม.ย. 2569'},
+  {session_id:'OD-110160', emp_id:'110160', level:3, group:'assistant', status:'submitted',
+   c1_annual:92, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:434, c2_func:73, c2_b5f:4.25,
+   c3_team:69, c4_train:100, c4_train_hours:63.6, c5_lead:48, updated:'เม.ย. 2569'},
+  {session_id:'OD-112173', emp_id:'112173', level:3, group:'assistant', status:'submitted',
+   c1_annual:96, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:485, c2_func:77, c2_b5f:4.38,
+   c3_team:92, c4_train:100, c4_train_hours:69.7, c5_lead:68, updated:'ก.ค. 2569'},
+  {session_id:'OD-550725', emp_id:'550725', level:4, group:'med_support', status:'approved',
+   c1_annual:91, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:437, c2_func:78, c2_b5f:4.09,
+   c3_team:99, c4_train:100, c4_train_hours:73.9, c5_lead:89, updated:'มี.ค. 2569'},
+  {session_id:'OD-503288', emp_id:'503288', level:2, group:'assistant', status:'approved',
+   c1_annual:87, c1_unit:79, c1_eng_type:'toeic', c1_eng_val:368, c2_func:91, c2_b5f:4.34,
+   c3_team:65, c4_train:100, c4_train_hours:74.6, c5_lead:63, updated:'เม.ย. 2569'},
+  {session_id:'OD-515946', emp_id:'515946', level:3, group:'assistant', status:'submitted',
+   c1_annual:98, c1_unit:91, c1_eng_type:'toeic', c1_eng_val:463, c2_func:72, c2_b5f:4.61,
+   c3_team:94, c4_train:100, c4_train_hours:73.5, c5_lead:66, updated:'ม.ค. 2569'},
+  {session_id:'OD-543489', emp_id:'543489', level:4, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:528, c2_func:72, c2_b5f:4.14,
+   c3_team:88, c4_train:100, c4_train_hours:60.2, c5_lead:81, updated:'ม.ค. 2569'},
+  {session_id:'OD-113515', emp_id:'113515', level:4, group:'med_support', status:'approved',
+   c1_annual:92, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:472, c2_func:94, c2_b5f:4.21,
+   c3_team:64, c4_train:100, c4_train_hours:75.5, c5_lead:83, updated:'เม.ย. 2569'},
+  {session_id:'OD-530507', emp_id:'530507', level:4, group:'med_support', status:'approved',
+   c1_annual:91, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:439, c2_func:96, c2_b5f:4.47,
+   c3_team:83, c4_train:100, c4_train_hours:63.1, c5_lead:85, updated:'มิ.ย. 2569'},
+  {session_id:'OD-112799', emp_id:'112799', level:4, group:'med_support', status:'approved',
+   c1_annual:86, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:535, c2_func:82, c2_b5f:4.81,
+   c3_team:71, c4_train:100, c4_train_hours:66.2, c5_lead:49, updated:'ก.ค. 2569'},
+  {session_id:'OD-603860', emp_id:'603860', level:1, group:'assistant', status:'approved',
+   c1_annual:95, c1_unit:97, c1_eng_type:'toeic', c1_eng_val:366, c2_func:91, c2_b5f:4.42,
+   c3_team:90, c4_train:100, c4_train_hours:74.3, c5_lead:94, updated:'ก.พ. 2569'},
+  {session_id:'OD-562552', emp_id:'562552', level:1, group:'assistant', status:'approved',
+   c1_annual:84, c1_unit:67, c1_eng_type:'toeic', c1_eng_val:387, c2_func:95, c2_b5f:3.86,
+   c3_team:64, c4_train:100, c4_train_hours:66.6, c5_lead:84, updated:'มี.ค. 2569'},
+  {session_id:'OD-574732', emp_id:'574732', level:1, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:445, c2_func:95, c2_b5f:4.4,
+   c3_team:60, c4_train:100, c4_train_hours:74.2, c5_lead:74, updated:'มิ.ย. 2569'},
+  {session_id:'OD-520420', emp_id:'520420', level:1, group:'assistant', status:'approved',
+   c1_annual:97, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:392, c2_func:96, c2_b5f:3.91,
+   c3_team:85, c4_train:100, c4_train_hours:76.2, c5_lead:95, updated:'ม.ค. 2569'},
+  {session_id:'OD-538106', emp_id:'538106', level:2, group:'assistant', status:'approved',
+   c1_annual:94, c1_unit:96, c1_eng_type:'toeic', c1_eng_val:413, c2_func:73, c2_b5f:4.48,
+   c3_team:82, c4_train:100, c4_train_hours:64.9, c5_lead:89, updated:'พ.ค. 2569'},
+  {session_id:'OD-110696', emp_id:'110696', level:1, group:'assistant', status:'approved',
+   c1_annual:88, c1_unit:93, c1_eng_type:'toeic', c1_eng_val:339, c2_func:82, c2_b5f:3.76,
+   c3_team:93, c4_train:100, c4_train_hours:64.0, c5_lead:79, updated:'พ.ค. 2569'},
+  {session_id:'OD-113525', emp_id:'113525', level:1, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-553420', emp_id:'553420', level:2, group:'assistant', status:'approved',
+   c1_annual:95, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:424, c2_func:75, c2_b5f:3.93,
+   c3_team:63, c4_train:100, c4_train_hours:70.3, c5_lead:90, updated:'มิ.ย. 2569'},
+  {session_id:'OD-114313', emp_id:'114313', level:1, group:'assistant', status:'approved',
+   c1_annual:95, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:374, c2_func:85, c2_b5f:3.82,
+   c3_team:77, c4_train:100, c4_train_hours:68.0, c5_lead:89, updated:'ก.พ. 2569'},
+  {session_id:'OD-514899', emp_id:'514899', level:1, group:'assistant', status:'approved',
+   c1_annual:87, c1_unit:70, c1_eng_type:'toeic', c1_eng_val:359, c2_func:90, c2_b5f:3.78,
+   c3_team:97, c4_train:100, c4_train_hours:62.9, c5_lead:54, updated:'ม.ค. 2569'},
+  {session_id:'OD-515614', emp_id:'515614', level:1, group:'assistant', status:'submitted',
+   c1_annual:91, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:372, c2_func:89, c2_b5f:4.49,
+   c3_team:82, c4_train:100, c4_train_hours:75.9, c5_lead:75, updated:'ก.พ. 2569'},
+  {session_id:'OD-592264', emp_id:'592264', level:1, group:'assistant', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-591395', emp_id:'591395', level:1, group:'assistant', status:'approved',
+   c1_annual:86, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:351, c2_func:88, c2_b5f:4.65,
+   c3_team:69, c4_train:100, c4_train_hours:63.1, c5_lead:86, updated:'ก.ค. 2569'},
+  {session_id:'OD-110682', emp_id:'110682', level:1, group:'assistant', status:'approved',
+   c1_annual:94, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:362, c2_func:97, c2_b5f:3.82,
+   c3_team:84, c4_train:100, c4_train_hours:71.8, c5_lead:60, updated:'พ.ค. 2569'},
+  {session_id:'OD-524170', emp_id:'524170', level:2, group:'assistant', status:'submitted',
+   c1_annual:86, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:413, c2_func:82, c2_b5f:4.8,
+   c3_team:90, c4_train:100, c4_train_hours:70.9, c5_lead:95, updated:'ก.ค. 2569'},
+  {session_id:'OD-110170', emp_id:'110170', level:3, group:'assistant', status:'submitted',
+   c1_annual:84, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:429, c2_func:94, c2_b5f:4.47,
+   c3_team:90, c4_train:100, c4_train_hours:67.3, c5_lead:79, updated:'มิ.ย. 2569'},
+  {session_id:'OD-560865', emp_id:'560865', level:3, group:'assistant', status:'submitted',
+   c1_annual:92, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:438, c2_func:84, c2_b5f:3.83,
+   c3_team:59, c4_train:100, c4_train_hours:65.3, c5_lead:84, updated:'มี.ค. 2569'},
+  {session_id:'OD-569683', emp_id:'569683', level:3, group:'assistant', status:'approved',
+   c1_annual:91, c1_unit:96, c1_eng_type:'toeic', c1_eng_val:481, c2_func:89, c2_b5f:4.44,
+   c3_team:67, c4_train:100, c4_train_hours:63.3, c5_lead:82, updated:'ก.พ. 2569'},
+  {session_id:'OD-533177', emp_id:'533177', level:3, group:'assistant', status:'approved',
+   c1_annual:87, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:405, c2_func:92, c2_b5f:4.44,
+   c3_team:77, c4_train:100, c4_train_hours:71.2, c5_lead:77, updated:'ม.ค. 2569'},
+  {session_id:'OD-112559', emp_id:'112559', level:3, group:'assistant', status:'approved',
+   c1_annual:84, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:413, c2_func:95, c2_b5f:4.76,
+   c3_team:86, c4_train:100, c4_train_hours:75.9, c5_lead:100, updated:'ม.ค. 2569'},
+  {session_id:'OD-113706', emp_id:'113706', level:3, group:'assistant', status:'approved',
+   c1_annual:84, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:387, c2_func:96, c2_b5f:3.72,
+   c3_team:75, c4_train:100, c4_train_hours:75.0, c5_lead:99, updated:'ส.ค. 2569'},
+  {session_id:'OD-611919', emp_id:'611919', level:1, group:'assistant', status:'submitted',
+   c1_annual:92, c1_unit:93, c1_eng_type:'toeic', c1_eng_val:337, c2_func:97, c2_b5f:3.8,
+   c3_team:85, c4_train:100, c4_train_hours:71.3, c5_lead:80, updated:'มิ.ย. 2569'},
+  {session_id:'OD-573752', emp_id:'573752', level:1, group:'assistant', status:'approved',
+   c1_annual:88, c1_unit:90, c1_eng_type:'toeic', c1_eng_val:398, c2_func:75, c2_b5f:4.45,
+   c3_team:89, c4_train:100, c4_train_hours:68.8, c5_lead:78, updated:'พ.ค. 2569'},
+  {session_id:'OD-540467', emp_id:'540467', level:1, group:'assistant', status:'approved',
+   c1_annual:89, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:339, c2_func:83, c2_b5f:4.3,
+   c3_team:62, c4_train:100, c4_train_hours:60.6, c5_lead:68, updated:'ม.ค. 2569'},
+  {session_id:'OD-113714', emp_id:'113714', level:1, group:'assistant', status:'submitted',
+   c1_annual:91, c1_unit:93, c1_eng_type:'toeic', c1_eng_val:339, c2_func:92, c2_b5f:4.33,
+   c3_team:72, c4_train:100, c4_train_hours:60.8, c5_lead:62, updated:'เม.ย. 2569'},
+  {session_id:'OD-595298', emp_id:'595298', level:1, group:'assistant', status:'approved',
+   c1_annual:90, c1_unit:93, c1_eng_type:'toeic', c1_eng_val:439, c2_func:95, c2_b5f:4.74,
+   c3_team:63, c4_train:100, c4_train_hours:69.6, c5_lead:75, updated:'มี.ค. 2569'},
+  {session_id:'OD-592797', emp_id:'592797', level:1, group:'assistant', status:'approved',
+   c1_annual:97, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:345, c2_func:84, c2_b5f:4.16,
+   c3_team:71, c4_train:100, c4_train_hours:64.2, c5_lead:60, updated:'ส.ค. 2569'},
+  {session_id:'OD-507329', emp_id:'507329', level:1, group:'assistant', status:'approved',
+   c1_annual:89, c1_unit:66, c1_eng_type:'toeic', c1_eng_val:398, c2_func:76, c2_b5f:4.68,
+   c3_team:99, c4_train:100, c4_train_hours:64.8, c5_lead:85, updated:'พ.ค. 2569'},
+  {session_id:'OD-522118', emp_id:'522118', level:2, group:'assistant', status:'approved',
+   c1_annual:87, c1_unit:82, c1_eng_type:'toeic', c1_eng_val:439, c2_func:83, c2_b5f:4.49,
+   c3_team:58, c4_train:100, c4_train_hours:77.4, c5_lead:70, updated:'มี.ค. 2569'},
+  {session_id:'OD-529287', emp_id:'529287', level:2, group:'assistant', status:'approved',
+   c1_annual:89, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:399, c2_func:90, c2_b5f:4.38,
+   c3_team:92, c4_train:100, c4_train_hours:71.7, c5_lead:99, updated:'มิ.ย. 2569'},
+  {session_id:'OD-515986', emp_id:'515986', level:2, group:'assistant', status:'approved',
+   c1_annual:86, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:368, c2_func:83, c2_b5f:4.88,
+   c3_team:62, c4_train:100, c4_train_hours:69.4, c5_lead:78, updated:'ส.ค. 2569'},
+  {session_id:'OD-600781', emp_id:'600781', level:1, group:'med_support', status:'approved',
+   c1_annual:90, c1_unit:85, c1_eng_type:'toeic', c1_eng_val:475, c2_func:77, c2_b5f:4.05,
+   c3_team:60, c4_train:100, c4_train_hours:62.8, c5_lead:49, updated:'ส.ค. 2569'},
+  {session_id:'OD-606005', emp_id:'606005', level:1, group:'med_support', status:'approved',
+   c1_annual:98, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:412, c2_func:95, c2_b5f:4.76,
+   c3_team:76, c4_train:100, c4_train_hours:68.8, c5_lead:88, updated:'ส.ค. 2569'},
+  {session_id:'OD-591638', emp_id:'591638', level:1, group:'med_support', status:'approved',
+   c1_annual:93, c1_unit:99, c1_eng_type:'toeic', c1_eng_val:408, c2_func:83, c2_b5f:4.26,
+   c3_team:59, c4_train:100, c4_train_hours:66.3, c5_lead:93, updated:'ก.ค. 2569'},
+  {session_id:'OD-559620', emp_id:'559620', level:1, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:472, c2_func:85, c2_b5f:4.21,
+   c3_team:94, c4_train:100, c4_train_hours:71.1, c5_lead:57, updated:'ก.ค. 2569'},
+  {session_id:'OD-529879', emp_id:'529879', level:2, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:86, c1_eng_type:'toeic', c1_eng_val:478, c2_func:74, c2_b5f:4.42,
+   c3_team:80, c4_train:100, c4_train_hours:65.9, c5_lead:91, updated:'ก.พ. 2569'},
+  {session_id:'OD-516543', emp_id:'516543', level:2, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:483, c2_func:73, c2_b5f:4.17,
+   c3_team:72, c4_train:100, c4_train_hours:69.3, c5_lead:64, updated:'มิ.ย. 2569'},
+  {session_id:'OD-060383', emp_id:'060383', level:3, group:'med_support', status:'approved',
+   c1_annual:76, c1_unit:68, c1_eng_type:'toeic', c1_eng_val:538, c2_func:82, c2_b5f:3.75,
+   c3_team:88, c4_train:100, c4_train_hours:63.3, c5_lead:73, updated:'ก.ค. 2569'},
+  {session_id:'OD-590135', emp_id:'590135', level:3, group:'med_support', status:'submitted',
+   c1_annual:90, c1_unit:98, c1_eng_type:'toeic', c1_eng_val:444, c2_func:90, c2_b5f:4.49,
+   c3_team:72, c4_train:100, c4_train_hours:70.8, c5_lead:55, updated:'ก.ค. 2569'},
+  {session_id:'OD-506788', emp_id:'506788', level:3, group:'med_support', status:'approved',
+   c1_annual:92, c1_unit:91, c1_eng_type:'toeic', c1_eng_val:481, c2_func:81, c2_b5f:4.64,
+   c3_team:83, c4_train:100, c4_train_hours:71.5, c5_lead:51, updated:'ก.พ. 2569'},
+  {session_id:'OD-505836', emp_id:'505836', level:3, group:'med_support', status:'approved',
+   c1_annual:88, c1_unit:83, c1_eng_type:'toeic', c1_eng_val:516, c2_func:93, c2_b5f:4.44,
+   c3_team:77, c4_train:100, c4_train_hours:60.8, c5_lead:71, updated:'ม.ค. 2569'},
+  {session_id:'OD-505837', emp_id:'505837', level:3, group:'med_support', status:'approved',
+   c1_annual:75, c1_unit:71, c1_eng_type:'toeic', c1_eng_val:517, c2_func:87, c2_b5f:4.85,
+   c3_team:74, c4_train:100, c4_train_hours:64.9, c5_lead:73, updated:'พ.ค. 2569'},
+  {session_id:'OD-114118', emp_id:'114118', level:3, group:'med_support', status:'submitted',
+   c1_annual:88, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:519, c2_func:96, c2_b5f:4.77,
+   c3_team:62, c4_train:100, c4_train_hours:60.3, c5_lead:53, updated:'มิ.ย. 2569'},
+  {session_id:'OD-111818', emp_id:'111818', level:3, group:'med_support', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-112651', emp_id:'112651', level:3, group:'med_support', status:'approved',
+   c1_annual:94, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:489, c2_func:73, c2_b5f:4.52,
+   c3_team:67, c4_train:100, c4_train_hours:70.9, c5_lead:54, updated:'พ.ค. 2569'},
+  {session_id:'OD-112416', emp_id:'112416', level:3, group:'med_support', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-113531', emp_id:'113531', level:3, group:'med_support', status:'approved',
+   c1_annual:86, c1_unit:84, c1_eng_type:'toeic', c1_eng_val:441, c2_func:94, c2_b5f:4.55,
+   c3_team:86, c4_train:100, c4_train_hours:69.2, c5_lead:82, updated:'ส.ค. 2569'},
+  {session_id:'OD-112522', emp_id:'112522', level:3, group:'med_support', status:'approved',
+   c1_annual:85, c1_unit:95, c1_eng_type:'toeic', c1_eng_val:445, c2_func:77, c2_b5f:3.75,
+   c3_team:59, c4_train:100, c4_train_hours:77.2, c5_lead:51, updated:'ม.ค. 2569'},
+  {session_id:'OD-111806', emp_id:'111806', level:3, group:'med_support', status:'approved',
+   c1_annual:84, c1_unit:99, c1_eng_type:'toeic', c1_eng_val:484, c2_func:80, c2_b5f:3.95,
+   c3_team:94, c4_train:100, c4_train_hours:63.5, c5_lead:78, updated:'ส.ค. 2569'},
+  {session_id:'OD-112219', emp_id:'112219', level:3, group:'med_support', status:'approved',
+   c1_annual:93, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:456, c2_func:85, c2_b5f:4.5,
+   c3_team:77, c4_train:100, c4_train_hours:68.7, c5_lead:70, updated:'มี.ค. 2569'},
+  {session_id:'OD-111268', emp_id:'111268', level:3, group:'med_support', status:'approved',
+   c1_annual:68, c1_unit:69, c1_eng_type:'toeic', c1_eng_val:463, c2_func:98, c2_b5f:4.71,
+   c3_team:78, c4_train:100, c4_train_hours:62.5, c5_lead:73, updated:'ก.ค. 2569'},
+  {session_id:'OD-111794', emp_id:'111794', level:3, group:'med_support', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-551597', emp_id:'551597', level:3, group:'med_support', status:'approved',
+   c1_annual:89, c1_unit:87, c1_eng_type:'toeic', c1_eng_val:463, c2_func:84, c2_b5f:3.98,
+   c3_team:61, c4_train:100, c4_train_hours:77.0, c5_lead:91, updated:'เม.ย. 2569'},
+  {session_id:'OD-113961', emp_id:'113961', level:3, group:'med_support', status:'approved',
+   c1_annual:84, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:483, c2_func:76, c2_b5f:4.75,
+   c3_team:84, c4_train:100, c4_train_hours:66.9, c5_lead:53, updated:'ก.ค. 2569'},
+  {session_id:'OD-513115', emp_id:'513115', level:3, group:'med_support', status:'approved',
+   c1_annual:96, c1_unit:92, c1_eng_type:'toeic', c1_eng_val:506, c2_func:94, c2_b5f:3.82,
+   c3_team:86, c4_train:100, c4_train_hours:71.5, c5_lead:49, updated:'มิ.ย. 2569'},
+  {session_id:'OD-507304', emp_id:'507304', level:4, group:'med_support', status:'draft',
+   c1_annual:null, c1_unit:null, c1_eng_type:'toeic', c1_eng_val:null, c2_func:null, c2_b5f:null,
+   c3_team:null, c4_train:null, c4_train_hours:null, c5_lead:null, updated:'—'},
+  {session_id:'OD-112124', emp_id:'112124', level:4, group:'med_support', status:'approved',
+   c1_annual:89, c1_unit:96, c1_eng_type:'toeic', c1_eng_val:508, c2_func:84, c2_b5f:3.86,
+   c3_team:68, c4_train:100, c4_train_hours:74.9, c5_lead:77, updated:'ม.ค. 2569'}
+);
+
 let AUDIT_LOG = [
   {t:'25/06 09:14', who:'EMP001', action:'Login สำเร็จ', ip:'192.168.1.45'},
   {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001)', ip:'192.168.1.10'},
@@ -1168,21 +1665,201 @@ function checkHardGate(a){
 }
 
 /* ============================================================
+   PROFESSION-AWARE LEVEL LABEL
+   ระบบตอนนี้รองรับหลายสายวิชาชีพ (เภสัชกร/นักรังสีเทคนิค/นักกายภาพบำบัด/นักเทคนิคพยาธิวิทยา ฯลฯ)
+   ไม่ใช่แค่เภสัชกรอย่างเดียว จึงต้องแสดงชื่อตำแหน่งจริงของพนักงานแทนคำว่า "Pharmacist" ที่ตายตัว
+   ============================================================ */
+function inferProfessionTitle(dept, group){
+  if(!dept) return group==='med_support' ? 'พนักงานสายวิชาชีพ' : 'ผู้ช่วยวิชาชีพ';
+  if(dept.includes('เภสัช')) return group==='med_support' ? 'เภสัชกร' : 'ผู้ช่วยเภสัชกร';
+  if(dept.includes('รังสี')) return group==='med_support' ? 'นักรังสีเทคนิค' : 'ผู้ช่วยนักรังสีเทคนิค';
+  if(dept.includes('พยาธิ')) return group==='med_support' ? 'นักเทคนิคพยาธิวิทยา' : 'ผู้ช่วยนักเทคนิคพยาธิวิทยา';
+  if(dept.includes('กายภาพ')) return group==='med_support' ? 'นักกายภาพบำบัด' : 'ผู้ช่วยนักกายภาพบำบัด';
+  if(dept.includes('Insurance')) return 'เจ้าหน้าที่ UR';
+  return group==='med_support' ? 'พนักงานสายวิชาชีพ' : 'ผู้ช่วยวิชาชีพ';
+}
+function levelLabelFor(a, level){
+  const cfg = CONFIG[a.group];
+  const raw = cfg.labels[level] || '';
+  const m = raw.match(/\(([^)]+)\)/);
+  const suffix = m ? ' ('+m[1]+')' : '';
+  const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
+  const title = (emp && emp.title) ? emp.title : inferProfessionTitle(emp && emp.dept, a.group);
+  return `${title} ${level}${suffix}`;
+}
+function levelLabel(a){ return levelLabelFor(a, a.level); }
+
+/* ============================================================
+   SEARCHABLE SELECT (Autocomplete) — แทนระบบ <select> เดิมที่ต้องเลื่อนหาชื่อยาวๆ
+   พิมพ์รหัสพนักงานหรือชื่อเพื่อกรองรายการ พร้อมจัดกลุ่มตามแผนก/ระดับ (Optgroup-style)
+   ============================================================ */
+const SS_STATE = {};
+let SS_GLOBAL_LISTENER_ADDED = false;
+
+function ssEnsureGlobalListener(){
+  if(SS_GLOBAL_LISTENER_ADDED) return;
+  document.addEventListener('click', (ev)=>{
+    Object.keys(SS_STATE).forEach(cid=>{
+      const container = document.getElementById(cid);
+      if(container && !container.contains(ev.target)) ssClose(cid);
+    });
+  });
+  SS_GLOBAL_LISTENER_ADDED = true;
+}
+
+function ssInit(containerId, options, onSelect, placeholder){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  SS_STATE[containerId] = { options, onSelect: onSelect||null, selectedId: null, query: '' };
+  container.innerHTML = `
+    <div class="ss-input-wrap">
+      <span class="ss-icon">🔍</span>
+      <input type="text" class="ss-input" id="${containerId}-input" placeholder="${placeholder}"
+        autocomplete="off"
+        oninput="ssOnInput('${containerId}')"
+        onfocus="ssOnFocus('${containerId}')"
+        onkeydown="ssOnKeydown('${containerId}', event)">
+      <span class="ss-clear" id="${containerId}-clear" style="display:none" onclick="ssClear('${containerId}')">✕</span>
+    </div>
+    <div class="ss-panel" id="${containerId}-panel"></div>`;
+  ssEnsureGlobalListener();
+}
+
+function ssHighlight(text, query){
+  if(!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if(idx===-1) return text;
+  return text.slice(0,idx) + '<b style="color:var(--green-d)">' + text.slice(idx, idx+query.length) + '</b>' + text.slice(idx+query.length);
+}
+
+function ssRenderPanel(containerId){
+  const state = SS_STATE[containerId];
+  const panel = document.getElementById(containerId+'-panel');
+  if(!state || !panel) return;
+  const q = state.query.trim().toLowerCase();
+  const filtered = state.options.filter(o=>!q || o.id.toLowerCase().includes(q) || o.label.toLowerCase().includes(q));
+  if(!filtered.length){
+    panel.innerHTML = `<div class="ss-empty">ไม่พบพนักงานที่ตรงกับ "${state.query}"</div>`;
+    return;
+  }
+  const groups = [];
+  const byGroup = {};
+  filtered.forEach(o=>{
+    if(!byGroup[o.group]){ byGroup[o.group]=[]; groups.push(o.group); }
+    byGroup[o.group].push(o);
+  });
+  panel.innerHTML = groups.map(g=>`
+    <div class="ss-group-label">${g}</div>
+    ${byGroup[g].map(o=>`
+      <div class="ss-option" onclick="ssSelect('${containerId}','${o.id}')">
+        <div class="ss-option-name">${ssHighlight(o.label, state.query)}</div>
+        ${o.sublabel? `<div class="ss-option-sub">${o.sublabel}</div>`:''}
+      </div>`).join('')}
+  `).join('');
+}
+
+function ssOnInput(containerId){
+  const state = SS_STATE[containerId];
+  const input = document.getElementById(containerId+'-input');
+  state.query = input.value;
+  state.selectedId = null;
+  ssRenderPanel(containerId);
+  ssOpen(containerId);
+  document.getElementById(containerId+'-clear').style.display = input.value? 'inline-block':'none';
+}
+
+function ssOnFocus(containerId){
+  const state = SS_STATE[containerId];
+  state.query = '';
+  ssRenderPanel(containerId);
+  ssOpen(containerId);
+  const input = document.getElementById(containerId+'-input');
+  if(input) input.select();
+}
+
+function ssOnKeydown(containerId, ev){
+  if(ev.key==='Escape'){ ssClose(containerId); ev.target.blur(); }
+  if(ev.key==='Enter'){
+    ev.preventDefault();
+    const panel = document.getElementById(containerId+'-panel');
+    const first = panel && panel.querySelector('.ss-option');
+    if(first) first.click();
+  }
+}
+
+function ssOpen(containerId){
+  const panel = document.getElementById(containerId+'-panel');
+  if(panel) panel.classList.add('show');
+}
+function ssClose(containerId){
+  const panel = document.getElementById(containerId+'-panel');
+  if(panel) panel.classList.remove('show');
+}
+
+function ssSelect(containerId, value){
+  const state = SS_STATE[containerId];
+  if(!state) return;
+  const opt = state.options.find(o=>o.id===value);
+  state.selectedId = value;
+  const input = document.getElementById(containerId+'-input');
+  if(input) input.value = opt ? opt.label : value;
+  const clearBtn = document.getElementById(containerId+'-clear');
+  if(clearBtn) clearBtn.style.display = 'inline-block';
+  ssClose(containerId);
+  if(state.onSelect) state.onSelect(value);
+}
+
+function ssClear(containerId){
+  const state = SS_STATE[containerId];
+  if(!state) return;
+  state.selectedId = null;
+  state.query = '';
+  const input = document.getElementById(containerId+'-input');
+  if(input) input.value = '';
+  const clearBtn = document.getElementById(containerId+'-clear');
+  if(clearBtn) clearBtn.style.display = 'none';
+  ssRenderPanel(containerId);
+  if(input) input.focus();
+  if(state.onSelect) state.onSelect('');
+}
+
+function ssGetValue(containerId){
+  return SS_STATE[containerId] ? SS_STATE[containerId].selectedId : null;
+}
+
+/* ============================================================
    LOGIN
    ============================================================ */
-function initLoginOptions(){
-  const sel = document.getElementById('login-emp');
-  EMPLOYEES.forEach(e=>{
-    const opt = document.createElement('option');
-    opt.value = e.emp_id;
-    const roleLabel = e.role==='viewer'?'พนักงาน':e.role==='evaluator'?'หัวหน้างาน':'HR Admin';
-    opt.textContent = `${e.emp_id} — ${e.name} (${roleLabel})`;
-    sel.appendChild(opt);
+function buildLoginOptions(){
+  const managers = EMPLOYEES.filter(e=>e.role==='evaluator').map(e=>({
+    id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel:'หัวหน้างาน · '+e.dept,
+    group:'👔 ผู้บริหาร / หัวหน้างาน (Managers)'
+  }));
+  const admins = EMPLOYEES.filter(e=>e.role==='admin').map(e=>({
+    id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel:'HR Admin',
+    group:'🛡️ ฝ่าย HR / Admin'
+  }));
+  const staffByDept = {};
+  EMPLOYEES.filter(e=>e.role==='viewer').forEach(e=>{
+    const sub = levelLabelFor({group:e.group, emp_id:e.emp_id}, e.level);
+    const item = { id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel: sub, group: '🏥 '+e.dept };
+    (staffByDept[e.dept] = staffByDept[e.dept] || []).push(item);
   });
+  let staffFlat = [];
+  DEPARTMENTS.forEach(d=>{ if(staffByDept[d]) staffFlat = staffFlat.concat(staffByDept[d]); });
+  const covered = new Set(staffFlat.map(o=>o.id));
+  Object.keys(staffByDept).forEach(d=>{
+    staffByDept[d].forEach(item=>{ if(!covered.has(item.id)) staffFlat.push(item); });
+  });
+  return [...managers, ...admins, ...staffFlat];
+}
+
+function initLoginOptions(){
+  ssInit('login-emp-ss', buildLoginOptions(), null, 'พิมพ์รหัสพนักงาน หรือชื่อเพื่อค้นหา...');
 }
 
 function doLogin(){
-  const empId = document.getElementById('login-emp').value;
+  const empId = ssGetValue('login-emp-ss');
   if(!empId){ toast('กรุณาเลือกรหัสพนักงานเพื่อทดสอบ'); return; }
   currentUser = EMPLOYEES.find(e=>e.emp_id===empId);
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Login สำเร็จ (Demo)', ip:'127.0.0.1'});
@@ -1196,6 +1873,7 @@ function logout(){
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-pw').value='';
+  ssClear('login-emp-ss');
 }
 
 function nowStr(){
@@ -1354,7 +2032,7 @@ function careerPathHtml(a){
     return `<div class="cp-step ${cls}">
       <div class="cp-dot">${l<a.level? '✓' : 'L'+l}</div>
       <div class="cp-body">
-        <div class="cp-name">${cfg.labels[l]}</div>
+        <div class="cp-name">${levelLabelFor(a, l)}</div>
         <div class="cp-meta">${l===a.level? 'Level ปัจจุบันของคุณ' : (l<a.level? 'ผ่านเกณฑ์เลื่อนขั้นแล้ว':'ต้องผ่านเกณฑ์รวม ≥80% และไม่ติด Hard Gate')}</div>
         ${tag}
       </div>
@@ -1453,7 +2131,7 @@ function renderResult(c){
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
       <div>
-        <div style="font-size:13px;color:var(--text-2)">${cfg.labels[a.level]} · อัปเดตล่าสุด ${a.updated}</div>
+        <div style="font-size:13px;color:var(--text-2)">${levelLabel(a)} · อัปเดตล่าสุด ${a.updated}</div>
         <div style="font-size:32px;font-weight:800;color:${pass?'var(--green)':'var(--crimson)'};margin-top:4px">${a.total} <span style="font-size:15px;font-weight:600;color:var(--text-2)">/ 100</span></div>
       </div>
       <span class="badge ${pass?'badge-pass':'badge-fail'}" style="font-size:13px;padding:6px 16px">${pass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}</span>
@@ -1503,7 +2181,7 @@ function renderHistory(c){
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <div>
             <div style="font-weight:700;font-size:13.5px">${emp?emp.name:a.emp_id}</div>
-            <div style="font-size:11.5px;color:var(--text-2);margin-top:2px">${CONFIG[a.group].labels[a.level]} · อัปเดตล่าสุด ${a.updated}</div>
+            <div style="font-size:11.5px;color:var(--text-2);margin-top:2px">${levelLabel(a)} · อัปเดตล่าสุด ${a.updated}</div>
             ${hardFailBadge? `<div style="font-size:10.5px;font-weight:700;color:var(--crimson-d);margin-top:5px">⚠️ ตกเกณฑ์ภาคบังคับ: ${hg.reasons.join(' · ')}</div>`:''}
           </div>
           <div style="display:flex;align-items:center;gap:12px">
@@ -1538,19 +2216,27 @@ function statusLabel(s){ return {draft:'ร่าง',submitted:'รอ HR อ�
 /* ============================================================
    EVALUATOR: ประเมินพนักงาน (Manager fields: C1-2 unit, C2, C3, C5)
    ============================================================ */
+function buildAssessOptions(){
+  return EMPLOYEES.filter(e=>e.role==='viewer' && e.dept===currentUser.dept && e.emp_id!==currentUser.emp_id)
+    .map(e=>{
+      const lvl = levelLabelFor({group:e.group, emp_id:e.emp_id}, e.level);
+      return { id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel: lvl, group: lvl };
+    });
+}
+
 function renderAssess(c){
   // กรองเฉพาะสายงานตัวเอง + กันตัวเองออกเสมอ (ป้องกันหัวหน้าประเมิน/ให้คะแนนตัวเอง)
-  const opts = EMPLOYEES.filter(e=>e.role==='viewer' && e.dept===currentUser.dept && e.emp_id!==currentUser.emp_id)
-    .map(e=>`<option value="${e.emp_id}">${e.emp_id} — ${e.name}</option>`).join('');
+  const opts = buildAssessOptions();
   c.innerHTML = `
   <div class="card">
     <div class="card-title">เลือกพนักงานที่จะประเมิน <span style="font-weight:400;font-size:11.5px;color:var(--text-2)">(เฉพาะสายงาน: ${currentUser.dept})</span></div>
-    <select class="emp-select" id="assess-emp" onchange="loadAssessForm()">
-      <option value="">— เลือกพนักงาน —</option>${opts}
-    </select>
+    <div class="ss-wrap" id="assess-emp-ss"></div>
     <div id="assess-form"></div>
-    ${!opts? `<div class="empty">ไม่มีพนักงานในสายงานนี้</div>`:''}
+    ${!opts.length? `<div class="empty">ไม่มีพนักงานในสายงานนี้</div>`:''}
   </div>`;
+  if(opts.length){
+    ssInit('assess-emp-ss', opts, (val)=>{ loadAssessForm(val); }, 'พิมพ์รหัสพนักงาน หรือชื่อเพื่อค้นหา...');
+  }
 }
 
 function subRowsHtml(subs, savedVals, prefix){
@@ -1574,8 +2260,7 @@ function subPct(subs, prefix){
   return weight ? Math.round(total/weight*1000)/10 : 0; // % รวมของ Criteria นี้
 }
 
-function loadAssessForm(){
-  const empId = document.getElementById('assess-emp').value;
+function loadAssessForm(empId){
   const box = document.getElementById('assess-form');
   if(!empId){ box.innerHTML=''; return; }
   const emp = EMPLOYEES.find(e=>e.emp_id===empId);
@@ -1590,7 +2275,7 @@ function loadAssessForm(){
   const legacyNote = (field,val) => (val!=null && !a[field+'_subs']) ? `<div style="font-size:10.5px;color:var(--text-2);margin:-6px 0 8px 2px">ค่าก่อนหน้า (แบบสรุปรวม): <b>${val}%</b> — กรอกรายละเอียดด้านล่างเพื่ออัปเดตเป็นแบบละเอียด</div>` : '';
 
   box.innerHTML = `
-    <div style="font-size:12.5px;color:var(--text-2);margin:14px 0">${cfg.labels[a.level]}</div>
+    <div style="font-size:12.5px;color:var(--text-2);margin:14px 0">${levelLabel(a)}</div>
 
     <div class="rate-row"><div class="rate-name">C1-1 Annual Test (%)${locked}</div><div class="rate-locked">${a.c1_annual ?? '—'}</div></div>
     <div class="rate-row"><div class="rate-name">C1-2 Unit Competency (%)<small>เกณฑ์ผ่าน ≥80%</small></div><input class="rate-input" type="number" min="0" max="100" id="in-unit" value="${a.c1_unit ?? ''}"></div>
@@ -1655,7 +2340,7 @@ function saveAssess(sid, submit){
   a.updated = nowStr();
   AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:(submit?'ส่งผลประเมิน ':'บันทึกร่าง ')+sid+' ('+a.emp_id+')', ip:'127.0.0.1'});
   toast(submit ? 'ส่งผลให้ HR ตรวจสอบแล้ว ✓' : 'บันทึกร่างเรียบร้อย');
-  loadAssessForm();
+  loadAssessForm(a.emp_id);
 }
 function numOrNull(id){ const el = document.getElementById(id); if(!el) return null; const v = el.value; return v===''?null:parseFloat(v); }
 
@@ -1947,7 +2632,7 @@ function renderApprove(c){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div>
           <div style="font-weight:700;font-size:14px">${emp.name} <span style="font-weight:400;color:var(--text-2);font-size:12px">(${a.emp_id})</span></div>
-          <div style="font-size:12px;color:var(--text-2)">${cfg.labels[a.level]}</div>
+          <div style="font-size:12px;color:var(--text-2)">${levelLabel(a)}</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:22px;font-weight:800;color:${a.total>=80 && !hg.fail?'var(--green)':'var(--crimson)'}">${a.total}</div>
