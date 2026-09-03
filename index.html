@@ -21,11 +21,11 @@ input,select{font-family:inherit}
 
 /* ===== LOGIN ===== */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(61,45,10,.08);border:1px solid var(--border)}
+.login-card{background:#fff;border-radius:18px;padding:48px 40px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(18,63,39,.07);border:1px solid var(--border)}
 .login-logo{width:56px;height:56px;background:var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:700;margin:0 auto 16px}
 .login-title{text-align:center;font-size:19px;font-weight:700;color:var(--green-d);margin-bottom:4px}
 .login-sub{text-align:center;font-size:12.5px;color:var(--text-2);margin-bottom:28px}
-.field{margin-bottom:16px}
+.field{margin-bottom:18px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px}
 .field input,.field select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;background:var(--ivory-2);color:var(--text)}
 .field input:focus,.field select:focus{outline:none;border-color:var(--green)}
@@ -274,6 +274,52 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
 .ss-option-sub{font-size:11px;color:var(--text-2)}
 .ss-empty{padding:20px 10px;text-align:center;font-size:12.5px;color:var(--text-2)}
 
+/* ===== SECURE LOGIN: PASSWORD FIELD (lock icon + show/hide) ===== */
+.pw-wrap{display:flex;align-items:center;gap:9px;border:1.5px solid var(--border);border-radius:11px;padding:0 14px;background:var(--ivory-2);transition:border-color .15s,box-shadow .15s,background .15s}
+.pw-wrap:focus-within{border-color:var(--green);box-shadow:0 0 0 3px var(--green-l);background:#fff}
+.pw-wrap.locked{border-color:var(--crimson);background:var(--crimson-l)}
+.pw-icon{font-size:13px;color:var(--text-2);flex-shrink:0}
+.pw-input{flex:1;min-width:0;border:none;background:transparent;padding:12px 0;font-size:14px;font-family:inherit;color:var(--text);outline:none;letter-spacing:.5px}
+.pw-input::placeholder{color:#96A69D;letter-spacing:normal}
+.pw-toggle{cursor:pointer;font-size:13.5px;padding:4px 6px;border-radius:6px;flex-shrink:0;user-select:none;color:var(--text-2)}
+.pw-toggle:hover{background:var(--border)}
+.pw-error{font-size:11.5px;color:var(--crimson-d);margin-top:7px;display:none;align-items:center;gap:5px}
+.pw-error.show{display:flex}
+.pw-lock-msg{font-size:11.5px;color:var(--crimson-d);background:var(--crimson-l);border:1px solid #f3c3cc;border-radius:8px;padding:8px 11px;margin-top:8px;display:none;align-items:center;gap:6px;font-weight:600}
+.pw-lock-msg.show{display:flex}
+.pw-rules{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.pw-rule{font-size:10.5px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--ivory-2);color:var(--text-2);border:1px solid var(--border);display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.pw-rule.met{background:var(--green-l);color:var(--green-d);border-color:#cde3d5}
+
+/* ===== DEMO HELP LINK (แทนกล่อง Demo Note เดิม) + MODAL ===== */
+.demo-help-link{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:20px;font-size:11.5px;color:var(--text-2);background:none;border:none;cursor:pointer;width:100%;padding:6px;border-radius:8px;transition:background .15s}
+.demo-help-link:hover{background:var(--ivory-2);color:var(--green-d)}
+.modal-overlay{position:fixed;inset:0;background:rgba(18,63,39,.35);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:16px;max-width:480px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(18,63,39,.25)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0}
+.modal-head h3{font-size:14.5px;font-weight:700;color:var(--green-d)}
+.modal-close{cursor:pointer;font-size:16px;color:var(--text-2);padding:4px 8px;border-radius:7px}
+.modal-close:hover{background:var(--ivory-2);color:var(--text)}
+.modal-body{padding:18px 22px;font-size:12px;color:var(--text-2);line-height:1.7}
+.modal-body b{color:var(--text)}
+.demo-acct-group{font-size:11px;font-weight:700;color:var(--green-d);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 6px}
+.demo-acct-group:first-child{margin-top:0}
+.demo-acct-row{padding:7px 0;border-bottom:1px solid var(--ivory-2);font-size:12px}
+.demo-acct-row b{color:var(--green-d);font-family:monospace;font-size:12.5px}
+
+/* ===== SECURE LOGIN: OTP STEP ===== */
+.otp-banner{background:var(--green-l);border:1px solid #cde3d5;border-radius:10px;padding:11px 13px;font-size:11.5px;color:var(--green-d);line-height:1.6;margin-bottom:14px}
+.otp-banner b{font-size:15px;letter-spacing:3px;color:var(--green-d)}
+.otp-input{width:100%;padding:14px;border:1.5px solid var(--border);border-radius:11px;font-size:20px;letter-spacing:8px;text-align:center;font-weight:700;color:var(--text);background:var(--ivory-2);font-family:inherit}
+.otp-input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-l);background:#fff}
+.otp-back{display:block;text-align:center;font-size:12px;color:var(--text-2);margin-top:12px;cursor:pointer}
+.otp-back:hover{color:var(--green-d);text-decoration:underline}
+
+/* ===== SECURITY TRUST BADGE ===== */
+.security-badge-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap}
+.security-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text-2);background:var(--ivory-2);border:1px solid var(--border);border-radius:20px;padding:5px 11px}
+
 .print-only{display:none}
 
 @media print{
@@ -316,27 +362,99 @@ select.emp-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">EC</div>
-    <div class="login-title">EC Samitivej</div>
-    <div class="login-sub">E-Career Path &amp; IDP System · เภสัชกรรมสมิติเวช</div>
-    <div class="field">
-      <label>รหัสพนักงาน (Employee ID)</label>
-      <div class="ss-wrap" id="login-emp-ss"></div>
+    <div class="login-title">CAREER PATH &amp; IDP System 2027</div>
+
+    <!-- STEP 1: เลือกตัวตน + รหัสผ่าน (สำหรับบัญชีที่เปิดใช้งานแล้ว) -->
+    <div id="login-step-1">
+      <div class="field">
+        <label>รหัสพนักงาน (Employee ID)</label>
+        <div class="ss-wrap" id="login-emp-ss"></div>
+      </div>
+      <div class="field">
+        <label>รหัสผ่าน</label>
+        <div class="pw-wrap" id="login-pw-wrap">
+          <span class="pw-icon">🔒</span>
+          <input type="password" class="pw-input" id="login-pw" placeholder="กรอกรหัสผ่านของคุณ" onkeydown="if(event.key==='Enter') attemptLoginStep1()">
+          <span class="pw-toggle" id="login-pw-toggle" onclick="togglePwVisibility('login-pw','login-pw-toggle')">👁️</span>
+        </div>
+        <div class="pw-error" id="login-pw-error">⚠️ <span id="login-pw-error-text">รหัสผ่านไม่ถูกต้อง</span></div>
+        <div class="pw-lock-msg" id="login-lock-msg">🔒 <span id="login-lock-text">บัญชีถูกล็อกชั่วคราว</span></div>
+      </div>
+      <button class="btn-primary" id="login-step1-btn" onclick="attemptLoginStep1()">เข้าสู่ระบบ</button>
+      <span class="otp-back" onclick="goToActivation()">ยังไม่เคยตั้งรหัสผ่าน? เปิดใช้งานบัญชีที่นี่ →</span>
     </div>
-    <div class="field">
-      <label>รหัสผ่าน</label>
-      <input type="password" id="login-pw" placeholder="กรอกอะไรก็ได้ (โหมด Demo)">
+
+    <!-- STEP 2: เปิดใช้งานบัญชีครั้งแรกด้วยรหัสพนักงาน + ตั้งรหัสผ่านเอง -->
+    <div id="login-step-activate" style="display:none">
+      <div class="otp-banner">
+        🔑 ยืนยันตัวตนด้วยรหัสพนักงาน แล้วตั้งรหัสผ่านของคุณเอง (ใช้ได้ครั้งเดียว)
+      </div>
+      <div class="field">
+        <label>ID Employee <span style="font-weight:400;color:var(--text-2)">(กรอกรหัสพนักงาน 6 ตัว)</span></label>
+        <input type="text" class="otp-input" id="activate-code" maxlength="10" placeholder="กรอกรหัสพนักงาน 6 ตัว" style="letter-spacing:2px;font-size:16px">
+      </div>
+      <div class="field">
+        <label>ตั้งรหัสผ่านใหม่ <span style="font-weight:400;color:var(--text-2)">(≥8 ตัวอักษร มีพิมพ์ใหญ่ พิมพ์เล็ก และตัวเลข)</span></label>
+        <div class="pw-wrap" id="activate-pw1-wrap">
+          <span class="pw-icon">🔒</span>
+          <input type="password" class="pw-input" id="activate-pw1" placeholder="ตั้งรหัสผ่านใหม่ อย่างน้อย 8 ตัวอักษร" oninput="checkPasswordRules()">
+          <span class="pw-toggle" id="activate-pw1-toggle" onclick="togglePwVisibility('activate-pw1','activate-pw1-toggle')">👁️</span>
+        </div>
+        <div class="pw-rules" id="pw-rules">
+          <span class="pw-rule" id="rule-length">○ อย่างน้อย 8 ตัวอักษร</span>
+          <span class="pw-rule" id="rule-upper">○ ตัวพิมพ์ใหญ่ (A-Z)</span>
+          <span class="pw-rule" id="rule-lower">○ ตัวพิมพ์เล็ก (a-z)</span>
+          <span class="pw-rule" id="rule-number">○ ตัวเลข (0-9)</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>ยืนยันรหัสผ่านอีกครั้ง</label>
+        <div class="pw-wrap" id="activate-pw2-wrap">
+          <span class="pw-icon">🔒</span>
+          <input type="password" class="pw-input" id="activate-pw2" placeholder="กรอกรหัสผ่านเดิมอีกครั้ง" onkeydown="if(event.key==='Enter') submitActivation()">
+          <span class="pw-toggle" id="activate-pw2-toggle" onclick="togglePwVisibility('activate-pw2','activate-pw2-toggle')">👁️</span>
+        </div>
+        <div class="pw-error" id="activate-error">⚠️ <span id="activate-error-text">ข้อมูลไม่ถูกต้อง</span></div>
+        <div class="pw-lock-msg" id="activate-lock-msg">🔒 <span id="activate-lock-text">บัญชีถูกล็อกชั่วคราว</span></div>
+      </div>
+      <button class="btn-primary" id="activate-btn" onclick="submitActivation()">ตั้งรหัสผ่านและเข้าสู่ระบบ</button>
+      <span class="otp-back" onclick="backToStep1()">← กลับไปเข้าสู่ระบบตามปกติ</span>
     </div>
-    <button class="btn-primary" onclick="doLogin()">เข้าสู่ระบบ</button>
-    <div class="demo-note"><b>โหมด Demo:</b> ข้อมูลทั้งหมดเป็น Mock Data เก็บในเครื่องชั่วคราว เข้าสู่ระบบด้วยรหัสพนักงานด้านบน รหัสผ่านใส่อะไรก็ได้ (ยังไม่ผูก Authentication จริง จนกว่าจะเก็บ Feedback จากหัวหน้างานครบ)<br><br>
-    <b>บัญชีหัวหน้างานจริง (จากไฟล์ Test_Med.xlsx) — สำหรับให้หัวหน้าทดสอบระบบ:</b><br>
-    · <b>113513</b> — ภก. อภิรักษ์ ปัญญาดี — หัวหน้าเภสัชกรรม รพ.สมิติเวช สุขุมวิท (ทีม 66 คน)<br>
-    · <b>112494</b> — ภญ. วรินรัตน์ ฤทธิ์รอด — หัวหน้าเภสัชกรรม รพ.สมิติเวช ศรีนครินทร์ (ทีม 31 คน)<br><br>
-    <b>บัญชีสาธิต Hard Gate:</b><br>
-    · <b>PC001</b> — ภญ. สมหญิง รักดี — ชั่วโมงอบรม/Unit Test ไม่ครบเกณฑ์<br>
-    · <b>PC002</b> — ภญ. พรทิพย์ สุขใจ — ผ่านเกณฑ์ทุกข้อ<br>
-    · <b>MGR006</b> — ดร.ภญ. มณีรัตน์ — ดูรายงาน/ประวัติผลของทีม</div>
+
+    <button class="demo-help-link" onclick="openDemoModal()">💡 คลิกเพื่อดูรายชื่อพนักงานทดสอบระบบ (Demo Mode)</button>
   </div>
 </div>
+
+<!-- MODAL: รายชื่อบัญชีทดสอบ (Demo Mode) -->
+<div class="modal-overlay" id="demo-modal-overlay" onclick="if(event.target===this) closeDemoModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>🧪 บัญชีทดสอบระบบ (Demo Mode)</h3>
+      <span class="modal-close" onclick="closeDemoModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      ข้อมูลทั้งหมดเป็น Mock Data เก็บในเครื่องชั่วคราว (รหัสผ่านที่ตั้งจะหายเมื่อ Refresh หน้า)<br>
+      <b>ทุกบัญชียังไม่เคยเปิดใช้งาน</b> — กด "เปิดใช้งานบัญชีที่นี่" แล้วกรอก <b>รหัสพนักงาน</b> ของบัญชีนั้นเพื่อตั้งรหัสผ่านครั้งแรก
+
+      <div class="demo-acct-group">บัญชีหัวหน้างานจริง (จากไฟล์ Test_Med.xlsx)</div>
+      <div class="demo-acct-row">· <b>113513</b> — ภก. อภิรักษ์ ปัญญาดี (ทีม 66 คน)</div>
+      <div class="demo-acct-row">· <b>112494</b> — ภญ. วรินรัตน์ ฤทธิ์รอด (ทีม 31 คน)</div>
+      <div class="demo-acct-row">· <b>112354</b> — ฤทธิไกร วงศ์ปัญญา (รังสีวิทยา สุขุมวิท)</div>
+      <div class="demo-acct-row">· <b>524389</b> — เสริมศักดิ์ แสงเพ็ชร (รังสีวิทยา ศรีนครินทร์)</div>
+      <div class="demo-acct-row">· <b>110167</b> — เมตตา จารุกิจจรูญ (พยาธิ+กายภาพ สุขุมวิท)</div>
+      <div class="demo-acct-row">· <b>112822</b> — สุรภา สายแก้ว (พยาธิวิทยา ศรีนครินทร์)</div>
+      <div class="demo-acct-row">· <b>110676</b> — สร้อยไข่ มหรรทัศนพงศ์ (กายภาพบำบัด ศรีนครินทร์)</div>
+
+      <div class="demo-acct-group">บัญชีสาธิต Hard Gate</div>
+      <div class="demo-acct-row">· <b>PC001</b> — ภญ. สมหญิง รักดี — ชั่วโมงอบรม/Unit Test ไม่ครบเกณฑ์</div>
+      <div class="demo-acct-row">· <b>PC002</b> — ภญ. พรทิพย์ สุขใจ — ผ่านเกณฑ์ทุกข้อ</div>
+      <div class="demo-acct-row">· <b>519611</b> — รัสรินทร์ นิธิกุลเลิศภัทร์ (HRM SVNH)</div>
+      <div class="demo-acct-row">· <b>MGR006</b> — ดร.ภญ. มณีรัตน์ — ดูรายงาน/ประวัติผลของทีม</div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- ============ APP ============ -->
 <div id="app">
@@ -431,7 +549,7 @@ const EMPLOYEES = [
   {emp_id:'MGR003', name:'ภก. ธีรพงศ์ ศรีวิไล', dept:'เภสัชกรรมฉุกเฉิน (ER)', group:'med_support', level:4, role:'evaluator'},
   {emp_id:'MGR004', name:'คุณสมพร ใจซื่อ', dept:'ผู้ช่วยเภสัชกรรม', group:'assistant', level:3, role:'evaluator'},
   {emp_id:'MGR005', name:'ภญ. นันทวัน เจริญสุข', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'evaluator'},
-  {emp_id:'HR001',  name:'ฝ่าย HR — คุณกัลยา', dept:'HR', group:null, level:null, role:'admin'},
+  {emp_id:'519611',  name:'รัสรินทร์ นิธิกุลเลิศภัทร์', dept:'HRM SVNH', group:null, level:null, role:'admin'},
   // Thai Insurance (UR Officer) — ข้อมูลจริงจากไฟล์ Test_Demo.xlsx
   {emp_id:'021037', name:'ประกายดาว อุดมธนโภคิน', dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'viewer'},
   {emp_id:'526197', name:'ภัทรวดี ภิรมย์ชม',      dept:'Thai Insurance (UR Officer)', group:'med_support', level:4, role:'viewer'},
@@ -1401,7 +1519,7 @@ ASSESSMENTS.push(
 let AUDIT_LOG = [
   {t:'25/06 09:14', who:'EMP001', action:'Login สำเร็จ', ip:'192.168.1.45'},
   {t:'25/06 09:20', who:'MGR001', action:'แก้ไข C2 Function Role: 85 → 90 (EMP001)', ip:'192.168.1.10'},
-  {t:'25/06 09:31', who:'HR001',  action:'Approve ผลประเมิน S1001', ip:'10.0.5.2'},
+  {t:'25/06 09:31', who:'519611',  action:'Approve ผลประเมิน S1001', ip:'10.0.5.2'},
   {t:'24/06 14:02', who:'EMP002', action:'Login ล้มเหลว (รหัสผ่านผิด)', ip:'203.150.x.x'},
   {t:'24/06 14:03', who:'EMP002', action:'Login สำเร็จ', ip:'203.150.x.x'},
 ];
@@ -1828,41 +1946,319 @@ function ssGetValue(containerId){
 }
 
 /* ============================================================
+   TABLE SEARCH FILTER — ช่องค้นหาแบบเบาๆ สำหรับกรองตารางยาวๆ (พนักงานทั้งหมด / ทุกการประเมิน)
+   กรองด้วย data-search attribute ที่ฝังไว้ในแต่ละแถว ไม่ต้อง Re-render ทั้งตาราง
+   ============================================================ */
+function tableSearchFilter(inputId, rowAttr){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const q = input.value.trim().toLowerCase();
+  const rows = document.querySelectorAll('tr['+rowAttr+']');
+  let visibleCount = 0;
+  rows.forEach(row=>{
+    const hay = (row.getAttribute('data-search')||'').toLowerCase();
+    const show = !q || hay.includes(q);
+    row.style.display = show ? '' : 'none';
+    if(show) visibleCount++;
+  });
+  const emptyEl = document.getElementById(inputId+'-empty');
+  if(emptyEl) emptyEl.style.display = visibleCount===0 ? 'block' : 'none';
+}
+
+/* ============================================================
    LOGIN
    ============================================================ */
 function buildLoginOptions(){
-  const managers = EMPLOYEES.filter(e=>e.role==='evaluator').map(e=>({
+  const managers = EMPLOYEES.filter(e=>e.role==='evaluator');
+  const admins = EMPLOYEES.filter(e=>e.role==='admin');
+  const managerItems = managers.map(e=>({
     id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel:'หัวหน้างาน · '+e.dept,
-    group:'👔 ผู้บริหาร / หัวหน้างาน (Managers)'
+    group:`👔 ผู้บริหาร / หัวหน้างาน (Managers) · ${managers.length} คน`
   }));
-  const admins = EMPLOYEES.filter(e=>e.role==='admin').map(e=>({
-    id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel:'HR Admin',
-    group:'🛡️ ฝ่าย HR / Admin'
+  const adminItems = admins.map(e=>({
+    id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel:'HRM SVNH',
+    group:`🛡️ ฝ่าย HR / Admin · ${admins.length} คน`
   }));
   const staffByDept = {};
   EMPLOYEES.filter(e=>e.role==='viewer').forEach(e=>{
-    const sub = levelLabelFor({group:e.group, emp_id:e.emp_id}, e.level);
-    const item = { id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel: sub, group: '🏥 '+e.dept };
-    (staffByDept[e.dept] = staffByDept[e.dept] || []).push(item);
+    (staffByDept[e.dept] = staffByDept[e.dept] || []).push(e);
   });
   let staffFlat = [];
-  DEPARTMENTS.forEach(d=>{ if(staffByDept[d]) staffFlat = staffFlat.concat(staffByDept[d]); });
+  const buildDeptItems = (dept, list) => list.map(e=>{
+    const sub = levelLabelFor({group:e.group, emp_id:e.emp_id}, e.level);
+    return { id:e.emp_id, label:`${e.emp_id} — ${e.name}`, sublabel: sub, group: `🏥 ${dept} · ${list.length} คน` };
+  });
+  DEPARTMENTS.forEach(d=>{ if(staffByDept[d]) staffFlat = staffFlat.concat(buildDeptItems(d, staffByDept[d])); });
   const covered = new Set(staffFlat.map(o=>o.id));
   Object.keys(staffByDept).forEach(d=>{
-    staffByDept[d].forEach(item=>{ if(!covered.has(item.id)) staffFlat.push(item); });
+    if(!DEPARTMENTS.includes(d)){
+      buildDeptItems(d, staffByDept[d]).forEach(item=>{ if(!covered.has(item.id)) staffFlat.push(item); });
+    }
   });
-  return [...managers, ...admins, ...staffFlat];
+  return [...managerItems, ...adminItems, ...staffFlat];
 }
 
 function initLoginOptions(){
-  ssInit('login-emp-ss', buildLoginOptions(), null, 'พิมพ์รหัสพนักงาน หรือชื่อเพื่อค้นหา...');
+  ssInit('login-emp-ss', buildLoginOptions(), onLoginIdentityChange, 'พิมพ์รหัสพนักงาน หรือชื่อเพื่อค้นหา...');
 }
 
-function doLogin(){
+function onLoginIdentityChange(empId){
+  // สลับตัวตนในกล่องค้นหา ต้องซิงก์สถานะ Lockout ให้ตรงกับคนที่เพิ่งเลือกใหม่เสมอ
+  // ไม่งั้นสถานะ "ล็อกอยู่" ของคนก่อนหน้าจะค้างติดมาโดยไม่เกี่ยวข้อง
+  document.getElementById('login-pw-error').classList.remove('show');
+  document.getElementById('login-pw').value = '';
+  if(!empId) return;
+  const state = loginAttemptState[empId];
+  if(state && state.lockedUntil > Date.now()){
+    showLockoutCountdown(empId, 'login');
+  } else {
+    resetLoginUI();
+  }
+}
+
+/* ============================================================
+   SECURE LOGIN (จำลอง) — Activation Code (ครั้งเดียว) + ตั้งรหัสผ่านเอง ≥8 ตัวอักษร
+   ทั้งหมดนี้เป็นการจำลองแนวคิดความปลอดภัยฝั่ง Client เพื่อสาธิต UX เท่านั้น
+   ของจริงต้องยืนยันรหัสผ่าน/Activation Code ฝั่ง Server เสมอ (ดู backend-starter/README.md)
+   ระบบจริงจะย้ายไปใช้ Supabase Auth: Activation Code → auth.users (synthetic email)
+   ============================================================ */
+const LOGIN_LOCKOUT_MS = 60000;   // ล็อก 60 วินาทีหลังกรอกผิดครบ 3 ครั้ง (ทั้ง Login ปกติ และตอนกรอก Activation Code)
+const PASSWORD_MIN_LENGTH = 8;
+const PW_RULE_LABELS = {
+  length: `อย่างน้อย ${PASSWORD_MIN_LENGTH} ตัวอักษร`,
+  upper: 'ตัวพิมพ์ใหญ่ (A-Z)',
+  lower: 'ตัวพิมพ์เล็ก (a-z)',
+  number: 'ตัวเลข (0-9)',
+};
+
+function checkPasswordRules(){
+  const pwEl = document.getElementById('activate-pw1');
+  const pw = pwEl ? pwEl.value : '';
+  const rules = {
+    length: pw.length >= PASSWORD_MIN_LENGTH,
+    upper: /[A-Z]/.test(pw),
+    lower: /[a-z]/.test(pw),
+    number: /[0-9]/.test(pw),
+  };
+  Object.keys(rules).forEach(key=>{
+    const el = document.getElementById('rule-'+key);
+    if(!el) return;
+    el.classList.toggle('met', rules[key]);
+    el.textContent = (rules[key] ? '✓ ' : '○ ') + PW_RULE_LABELS[key];
+  });
+  return rules;
+}
+const loginAttemptState = {};     // { empId: { count, lockedUntil } }
+const credentialStore = {};       // { empId: { password, activated:true } } — จำลอง auth.users ฝั่ง Client เท่านั้น (หายเมื่อ Refresh)
+let lockoutTimer = null;
+let activateLockoutTimer = null;
+
+function computeActivationCode(empId){
+  // จงใจให้ Activation Code = รหัสพนักงาน เพื่อลดภาระจำ/ลดสายเรียกเข้า HR ตามที่ต้องการ
+  // (รหัสผ่านที่ตั้งเองในขั้นตอนถัดไปคือความปลอดภัยหลักของบัญชี ไม่ใช่ Activation Code นี้)
+  return empId;
+}
+
+function openDemoModal(){
+  document.getElementById('demo-modal-overlay').classList.add('show');
+}
+function closeDemoModal(){
+  document.getElementById('demo-modal-overlay').classList.remove('show');
+}
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDemoModal(); });
+
+function togglePwVisibility(inputId, toggleId){
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(toggleId);
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  icon.textContent = show ? '🙈' : '👁️';
+}
+
+function checkLockout(empId){
+  const state = loginAttemptState[empId] || { count: 0, lockedUntil: 0 };
+  loginAttemptState[empId] = state;
+  return state;
+}
+
+function resetLoginUI(){
+  document.getElementById('login-pw-error').classList.remove('show');
+  document.getElementById('login-lock-msg').classList.remove('show');
+  document.getElementById('login-pw-wrap').classList.remove('locked');
+  document.getElementById('login-step1-btn').disabled = false;
+  document.getElementById('login-step1-btn').textContent = 'เข้าสู่ระบบ';
+  if(lockoutTimer){ clearInterval(lockoutTimer); lockoutTimer = null; }
+}
+
+function resetActivateUI(){
+  document.getElementById('activate-error').classList.remove('show');
+  document.getElementById('activate-lock-msg').classList.remove('show');
+  document.getElementById('activate-pw1-wrap').classList.remove('locked');
+  document.getElementById('activate-btn').disabled = false;
+  document.getElementById('activate-btn').textContent = 'ตั้งรหัสผ่านและเข้าสู่ระบบ';
+  if(activateLockoutTimer){ clearInterval(activateLockoutTimer); activateLockoutTimer = null; }
+}
+
+function goToActivation(){
+  document.getElementById('login-step-1').style.display = 'none';
+  document.getElementById('login-step-activate').style.display = 'block';
+  document.getElementById('activate-code').value = '';
+  document.getElementById('activate-pw1').value = '';
+  document.getElementById('activate-pw2').value = '';
   const empId = ssGetValue('login-emp-ss');
+  const state = empId ? loginAttemptState[empId] : null;
+  if(state && state.lockedUntil > Date.now()){
+    showLockoutCountdown(empId, 'activate');
+  } else {
+    resetActivateUI();
+  }
+  checkPasswordRules();
+  document.getElementById('activate-code').focus();
+}
+
+function backToStep1(){
+  document.getElementById('login-step-activate').style.display = 'none';
+  document.getElementById('login-step-1').style.display = 'block';
+  const empId = ssGetValue('login-emp-ss');
+  const state = empId ? loginAttemptState[empId] : null;
+  if(state && state.lockedUntil > Date.now()){
+    showLockoutCountdown(empId, 'login');
+  } else {
+    resetLoginUI();
+  }
+}
+
+function attemptLoginStep1(){
+  const empId = ssGetValue('login-emp-ss');
+  const pwInput = document.getElementById('login-pw');
+  const pwError = document.getElementById('login-pw-error');
+  const pwErrorText = document.getElementById('login-pw-error-text');
+  pwError.classList.remove('show');
+
   if(!empId){ toast('กรุณาเลือกรหัสพนักงานเพื่อทดสอบ'); return; }
-  currentUser = EMPLOYEES.find(e=>e.emp_id===empId);
-  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Login สำเร็จ (Demo)', ip:'127.0.0.1'});
+
+  const state = checkLockout(empId);
+  if(state.lockedUntil > Date.now()){
+    showLockoutCountdown(empId, 'login');
+    return;
+  }
+
+  const user = EMPLOYEES.find(e=>e.emp_id===empId);
+  const cred = credentialStore[empId];
+
+  if(!cred || !cred.activated){
+    pwErrorText.textContent = 'บัญชีนี้ยังไม่เคยเปิดใช้งาน กรุณากด "เปิดใช้งานบัญชีที่นี่" ด้านล่างก่อน';
+    pwError.classList.add('show');
+    return;
+  }
+
+  if(pwInput.value !== cred.password){
+    state.count++;
+    if(state.count >= 3){
+      state.lockedUntil = Date.now() + LOGIN_LOCKOUT_MS;
+      AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'บัญชีถูกล็อกชั่วคราว (กรอกรหัสผ่านผิดครบ 3 ครั้ง)', ip:'127.0.0.1'});
+      showLockoutCountdown(empId, 'login');
+    } else {
+      pwErrorText.textContent = `รหัสผ่านไม่ถูกต้อง (ผิดไปแล้ว ${state.count}/3 ครั้ง)`;
+      pwError.classList.add('show');
+      AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'Login ล้มเหลว (รหัสผ่านผิด ครั้งที่ '+state.count+')', ip:'127.0.0.1'});
+    }
+    return;
+  }
+
+  state.count = 0;
+  finalizeLogin(user);
+}
+
+function submitActivation(){
+  const empId = ssGetValue('login-emp-ss');
+  const codeInput = document.getElementById('activate-code');
+  const pw1 = document.getElementById('activate-pw1');
+  const pw2 = document.getElementById('activate-pw2');
+  const err = document.getElementById('activate-error');
+  const errText = document.getElementById('activate-error-text');
+  err.classList.remove('show');
+
+  if(!empId){ toast('กรุณาเลือกรหัสพนักงานที่ต้องการเปิดใช้งานก่อน'); return; }
+
+  const state = checkLockout(empId);
+  if(state.lockedUntil > Date.now()){
+    showLockoutCountdown(empId, 'activate');
+    return;
+  }
+
+  const correctCode = computeActivationCode(empId);
+  if(codeInput.value.trim().toUpperCase() !== correctCode.toUpperCase()){
+    state.count++;
+    if(state.count >= 3){
+      state.lockedUntil = Date.now() + LOGIN_LOCKOUT_MS;
+      AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'บัญชีถูกล็อกชั่วคราว (กรอก Activation Code ผิดครบ 3 ครั้ง)', ip:'127.0.0.1'});
+      showLockoutCountdown(empId, 'activate');
+    } else {
+      errText.textContent = `Activation Code ไม่ถูกต้อง (ผิดไปแล้ว ${state.count}/3 ครั้ง)`;
+      err.classList.add('show');
+      AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'เปิดใช้งานบัญชีล้มเหลว (Activation Code ผิด ครั้งที่ '+state.count+')', ip:'127.0.0.1'});
+    }
+    return;
+  }
+
+  const pwRules = checkPasswordRules();
+  if(!pwRules.length || !pwRules.upper || !pwRules.lower || !pwRules.number){
+    const missing = [];
+    if(!pwRules.length) missing.push(`อย่างน้อย ${PASSWORD_MIN_LENGTH} ตัวอักษร`);
+    if(!pwRules.upper) missing.push('ตัวพิมพ์ใหญ่');
+    if(!pwRules.lower) missing.push('ตัวพิมพ์เล็ก');
+    if(!pwRules.number) missing.push('ตัวเลข');
+    errText.textContent = `รหัสผ่านยังไม่ครบเงื่อนไข: ต้องมี${missing.join(', ')} (ดูรายการเช็คด้านบน)`;
+    err.classList.add('show');
+    return;
+  }
+  if(pw1.value !== pw2.value){
+    errText.textContent = 'รหัสผ่านทั้งสองช่องไม่ตรงกัน กรุณากรอกใหม่';
+    err.classList.add('show');
+    return;
+  }
+
+  state.count = 0;
+  credentialStore[empId] = { password: pw1.value, activated: true };
+  AUDIT_LOG.unshift({t:nowStr(), who:empId, action:'เปิดใช้งานบัญชีสำเร็จ — ตั้งรหัสผ่านใหม่แล้ว', ip:'127.0.0.1'});
+  const user = EMPLOYEES.find(e=>e.emp_id===empId);
+  finalizeLogin(user);
+}
+
+function showLockoutCountdown(empId, mode){
+  const state = loginAttemptState[empId];
+  const isLogin = mode==='login';
+  const wrap = document.getElementById(isLogin?'login-pw-wrap':'activate-pw1-wrap');
+  const lockMsg = document.getElementById(isLogin?'login-lock-msg':'activate-lock-msg');
+  const lockText = document.getElementById(isLogin?'login-lock-text':'activate-lock-text');
+  const btn = document.getElementById(isLogin?'login-step1-btn':'activate-btn');
+  wrap.classList.add('locked');
+  lockMsg.classList.add('show');
+  btn.disabled = true;
+
+  const timerRef = isLogin ? 'lockoutTimer' : 'activateLockoutTimer';
+  if(isLogin){ if(lockoutTimer) clearInterval(lockoutTimer); } else { if(activateLockoutTimer) clearInterval(activateLockoutTimer); }
+
+  const tick = ()=>{
+    const remain = Math.max(0, Math.ceil((state.lockedUntil - Date.now())/1000));
+    if(remain<=0){
+      if(isLogin){ clearInterval(lockoutTimer); lockoutTimer=null; resetLoginUI(); }
+      else { clearInterval(activateLockoutTimer); activateLockoutTimer=null; resetActivateUI(); }
+      state.count = 0; state.lockedUntil = 0;
+      toast('ปลดล็อกบัญชีแล้ว ลองใหม่อีกครั้ง');
+      return;
+    }
+    lockText.textContent = `บัญชีถูกล็อกชั่วคราวจากการกรอกผิดครบ 3 ครั้ง กรุณารออีก ${remain} วินาที`;
+    btn.textContent = `ล็อกอยู่ (${remain}s)`;
+  };
+  tick();
+  if(isLogin){ lockoutTimer = setInterval(tick, 1000); } else { activateLockoutTimer = setInterval(tick, 1000); }
+}
+
+function finalizeLogin(user){
+  currentUser = user;
+  AUDIT_LOG.unshift({t:nowStr(), who:currentUser.emp_id, action:'Login สำเร็จ', ip:'127.0.0.1'});
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
   renderShell();
@@ -1874,6 +2270,9 @@ function logout(){
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-pw').value='';
   ssClear('login-emp-ss');
+  backToStep1();
+  resetLoginUI();
+  resetActivateUI();
 }
 
 function nowStr(){
@@ -1892,7 +2291,7 @@ const NAV = {
 
 function renderShell(){
   document.getElementById('sb-name').textContent = currentUser.name;
-  const roleLabel = {viewer:'พนักงาน',evaluator:'หัวหน้างาน',admin:'HR Admin'}[currentUser.role];
+  const roleLabel = {viewer:'พนักงาน',evaluator:'หัวหน้างาน',admin:'HRM SVNH'}[currentUser.role];
   const rb = document.getElementById('sb-role');
   rb.textContent = roleLabel;
   rb.className = 'sb-user-role role-'+currentUser.role;
@@ -2483,22 +2882,28 @@ function renderDashboard(c){
   </div>
 
   <div class="card no-print">
-    <div class="card-title" style="justify-content:space-between;display:flex;align-items:center">
-      <span>📊 ทุกการประเมินในระบบ</span>
+    <div class="card-title" style="justify-content:space-between;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
+      <span>📊 ทุกการประเมินในระบบ <span style="font-weight:400;font-size:11px;color:var(--text-2)">(${ASSESSMENTS.length} รายการ)</span></span>
       <div style="display:flex;gap:8px">
         <button class="btn btn-outline" onclick="exportCSV()">📥 Export Excel (CSV)</button>
         <button class="btn btn-outline" onclick="exportPDF()">🖨️ Export PDF</button>
       </div>
     </div>
+    <div class="ss-input-wrap" style="margin-bottom:14px">
+      <span class="ss-icon">🔍</span>
+      <input type="text" class="ss-input" id="dash-table-search" placeholder="พิมพ์ชื่อ รหัสพนักงาน หรือแผนกเพื่อกรองรายการ..." oninput="tableSearchFilter('dash-table-search','data-assess-row')">
+    </div>
+    <div id="dash-table-search-empty" style="display:none" class="empty">ไม่พบรายการที่ตรงกับคำค้นหา</div>
     <table><tr><th>พนักงาน</th><th>แผนก</th><th>Level</th><th>คะแนน</th><th>สถานะ</th><th></th></tr>
     ${ASSESSMENTS.map(a=>{
       const emp = EMPLOYEES.find(e=>e.emp_id===a.emp_id);
       const hg = checkHardGate(a);
       const rowFail = a.status!=='draft' && hg.fail;
-      return `<tr${rowFail?' style="background:var(--crimson-l)"':''}><td>${emp?emp.name:a.emp_id}${rowFail?' <span title="'+hg.reasons.join(' · ')+'" style="color:var(--crimson-d)">⚠️</span>':''}</td><td>${emp?emp.dept:'—'}</td><td>L${a.level}</td>
+      const searchHay = `${a.emp_id} ${emp?emp.name:''} ${emp?emp.dept:''}`.toLowerCase();
+      return `<tr data-assess-row="${a.session_id}" data-search="${searchHay}"${rowFail?' style="background:var(--crimson-l)"':''}><td>${emp?emp.name:a.emp_id}${rowFail?' <span title="'+hg.reasons.join(' · ')+'" style="color:var(--crimson-d)">⚠️</span>':''}</td><td>${emp?emp.dept:'—'}</td><td>L${a.level}</td>
       <td>${a.status==='draft'?'—':a.total}</td><td><span class="badge ${rowFail?'badge-fail':'badge-'+a.status}">${rowFail?'ตก Hard Gate':statusLabel(a.status)}</span></td>
       <td><span style="color:var(--green-d);font-size:11.5px;cursor:pointer;font-weight:600" onclick="toggleHistDetail('${a.session_id}')" id="hist-arrow-${a.session_id}">▾ ดูรายละเอียด</span></td></tr>
-      <tr id="hist-detail-tr-${a.session_id}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${renderBreakdownCards(a)}</div></td></tr>`;
+      <tr id="hist-detail-tr-${a.session_id}" data-assess-row="${a.session_id}" data-search="${searchHay}" style="display:none"><td colspan="6" style="padding:0;border:none"><div id="hist-detail-${a.session_id}" style="padding:10px 0">${renderBreakdownCards(a)}</div></td></tr>`;
     }).join('')}
     </table>
   </div>
@@ -2700,19 +3105,25 @@ function renderEmployees(c){
   const nonHR = EMPLOYEES.filter(e=>e.role!=='admin');
   c.innerHTML = `
   <div class="card">
-    <div class="card-title" style="justify-content:space-between;display:flex">
-      <span>👥 พนักงานทั้งหมด</span>
+    <div class="card-title" style="justify-content:space-between;display:flex;flex-wrap:wrap;gap:10px">
+      <span>👥 พนักงานทั้งหมด <span style="font-weight:400;font-size:11px;color:var(--text-2)">(${nonHR.length} คน)</span></span>
       <span style="font-weight:400;font-size:11px;color:var(--text-2)">คลิกแถวเพื่อดู/แก้ไขคะแนน</span>
     </div>
+    <div class="ss-input-wrap" style="margin-bottom:14px">
+      <span class="ss-icon">🔍</span>
+      <input type="text" class="ss-input" id="emp-table-search" placeholder="พิมพ์รหัส ชื่อ หรือแผนกเพื่อกรองรายชื่อ..." oninput="tableSearchFilter('emp-table-search','data-emp-row')">
+    </div>
+    <div id="emp-table-search-empty" style="display:none" class="empty">ไม่พบพนักงานที่ตรงกับคำค้นหา</div>
     <table><tr><th>รหัส</th><th>ชื่อ</th><th>แผนก</th><th>กลุ่ม</th><th>Level</th><th>Role</th><th></th></tr>
     ${nonHR.map(e=>{
       const hasAssess = ASSESSMENTS.find(x=>x.emp_id===e.emp_id);
       const isManager = e.role==='evaluator';
-      return `<tr style="cursor:pointer" onclick="toggleEmpEdit('${e.emp_id}')"><td>${e.emp_id}</td><td>${e.name}${isManager?' <span style="font-size:10px;color:var(--gold-d);background:var(--gold-l);padding:1px 6px;border-radius:6px">หัวหน้างาน</span>':''}</td><td>${e.dept}</td>
+      const searchHay = `${e.emp_id} ${e.name} ${e.dept}`.toLowerCase();
+      return `<tr data-emp-row="${e.emp_id}" data-search="${searchHay}" style="cursor:pointer" onclick="toggleEmpEdit('${e.emp_id}')"><td>${e.emp_id}</td><td>${e.name}${isManager?' <span style="font-size:10px;color:var(--gold-d);background:var(--gold-l);padding:1px 6px;border-radius:6px">หัวหน้างาน</span>':''}</td><td>${e.dept}</td>
       <td>${e.group==='med_support'?'Med Support':e.group==='assistant'?'ผู้ช่วย':'—'}</td>
       <td>${e.level?'L'+e.level:'—'}</td><td>${e.role}</td>
       <td><span style="color:var(--green-d);font-size:11.5px;font-weight:600" id="emp-arrow-${e.emp_id}">▾ ${hasAssess?'ดู/แก้ไข':'เริ่มประเมิน'}</span></td></tr>
-      <tr id="emp-detail-tr-${e.emp_id}" style="display:none"><td colspan="7" style="padding:0;border:none;background:var(--ivory-2)"><div id="emp-detail-${e.emp_id}" style="padding:14px"></div></td></tr>`;
+      <tr id="emp-detail-tr-${e.emp_id}" data-emp-row="${e.emp_id}" data-search="${searchHay}" style="display:none"><td colspan="7" style="padding:0;border:none;background:var(--ivory-2)"><div id="emp-detail-${e.emp_id}" style="padding:14px"></div></td></tr>`;
     }).join('')}
     </table>
   </div>`;
